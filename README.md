@@ -71,3 +71,5 @@ $ make all
 2. `make isolation`: checking the isolation proof of the proof model.
 
 3. `make equivalence`: checking the equivalence relation (equality) between the proof model and the synthesis model.
+
+4. `make clean`: make the repo to a clean state (when you fail to check the Coq code in some steps)
