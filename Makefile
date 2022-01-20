@@ -36,41 +36,6 @@ all:
 	@$(MAKE) clightproof
 	@$(MAKE) correctproof
 
-
-BENCHSRC = $(wildcard benchmark/*.v)
-
-bench:
-	@echo $@
-	$(COQMAKEFILE) -f _CoqProject $(BENCHSRC) COQEXTRAFLAGS = '-w all,-extraction'  -o CoqMakefile
-	make -f CoqMakefile
-	$(CP) BenchmarkTestMain.ml benchmark
-	$(CP) BenchmarkTestMain.mli benchmark
-	$(COMPCERTSRCDIR)/tools/modorder $(COMPCERTSRCDIR)/.depend.extr cfrontend/PrintCsyntax.cmx | \
-	    $(AWK) '{ delete paths ;                                                                 \
-	              for(i = 1; i <= NF; i++) {                                                     \
-	                 x = $$i ;                                                                   \
-	                 sub("/[^/]*$$", "", x) ;                                                    \
-	                 paths[x] = 1 ;                                                              \
-	              }                                                                              \
-	              for(p in paths) {                                                              \
-	                 print "-I" ;                                                                \
-	                 print "$(COMPCERTSRCDIR)/" p ;                                              \
-	              }                                                                              \
-	            }' > compcertsrc-I	
-	$(COMPCERTSRCDIR)/tools/modorder $(COMPCERTSRCDIR)/.depend.extr cfrontend/PrintCsyntax.cmx | \
-	    $(AWK) 'BEGIN { RS=" " } /cmx/ { gsub(".*/","") ; print }' > compcertcprinter-cmx-args
-	$(OCAMLOPT) -args compcertsrc-I -I $(DXDIR)/extr -I $(DXDIR)/src -I benchmark benchmark/BenchmarkTestMain.mli	
-	$(OCAMLOPT) -args compcertsrc-I -I $(DXDIR)/extr -I $(DXDIR)/src -I benchmark -c benchmark/BenchmarkTestMain.ml
-	$(OCAMLOPT) -args compcertsrc-I -a -args compcertcprinter-cmx-args -o compcertcprinter.cmxa
-	$(OCAMLOPT) -args compcertsrc-I -a -args compcertcprinter-cmx-args -o compcertcprinter.a
-	$(OCAMLOPT) -args compcertsrc-I str.cmxa unix.cmxa compcertcprinter.cmxa $(DXDIR)/extr/ResultMonad.cmx $(DXDIR)/extr/DXModule.cmx $(DXDIR)/extr/DumpAsC.cmx benchmark/BenchmarkTestMain.cmx -o benchmark/main
-	ln -sf $(COMPCERTSRCDIR)/compcert.ini benchmark/compcert.ini
-	cd benchmark && ./main
-
-bench_clight:
-	@echo $@
-	cd benchmark && $(CLIGHTGEN32) clightlogicexample.c
-
 COQMODEL =  $(addprefix model/, Syntax.v Decode.v Semantics.v)
 COQSRC =  $(addprefix src/, InfComp.v GenMatchable.v CoqIntegers.v DxIntegers.v DxValues.v DxNat.v DxAST.v DxFlag.v DxList64.v DxOpcode.v IdentDef.v DxMemType.v DxMemRegion.v DxRegs.v DxState.v DxMonad.v DxInstructions.v Tests.v TestMain.v ExtrMain.v)
 COQEQUIV =  $(addprefix equivalence/, switch.v equivalence.v)
@@ -172,62 +137,6 @@ correctproof:
 
 GITDIR=/home/shyuan/GitLab/rbpf-dx
 
-gitpush:
-	@echo $@
-	cp src/*.v $(GITDIR)/src
-	cp src/*.c $(GITDIR)/src
-	cp comm/*.v $(GITDIR)/comm
-	cp model/*.v $(GITDIR)/model
-	cp equivalence/*.v $(GITDIR)/equivalence
-	cp equivalence/*.md $(GITDIR)/equivalence
-	cp isolation/*.v $(GITDIR)/isolation
-	cp isolation/*.md $(GITDIR)/isolation
-	cp benchmark/*.v $(GITDIR)/benchmark
-	cp benchmark/*.c $(GITDIR)/benchmark
-	cp benchmark/*.h $(GITDIR)/benchmark
-	cp benchmark/*.md $(GITDIR)/benchmark
-	cp benchmark/proof/*.v $(GITDIR)/benchmark/proof
-	cp clight/*.v $(GITDIR)/clight
-	cp clight/*.c $(GITDIR)/clight
-	cp clight/*.h $(GITDIR)/clight
-	cp proof/*.v $(GITDIR)/proof
-	cp proof/correctproof/*.v $(GITDIR)/proof/correctproof
-	cp repatch/*.c $(GITDIR)/repatch
-	cp Makefile $(GITDIR)
-	cp Makefile.config $(GITDIR)
-	cp _CoqProject $(GITDIR)
-	cp compcertsrc-I $(GITDIR)
-	cp compcertcprinter-cmx-args $(GITDIR)
-	cp *.md $(GITDIR)
-
-gitpull:
-	@echo $@
-	cp $(GITDIR)/src/*.v ./src
-	cp $(GITDIR)/src/*.c ./src
-	cp $(GITDIR)/comm/*.v ./comm
-	cp $(GITDIR)/model/*.v ./model
-	cp $(GITDIR)/equivalence/*.v ./equivalence
-	cp $(GITDIR)/equivalence/*.md ./equivalence
-	cp $(GITDIR)/isolation/*.v ./isolation
-	cp $(GITDIR)/isolation/*.md ./isolation
-	cp $(GITDIR)/benchmark/*.v ./benchmark
-	cp $(GITDIR)/benchmark/*.c ./benchmark
-	cp $(GITDIR)/benchmark/*.h ./benchmark
-	cp $(GITDIR)/benchmark/*.md ./benchmark
-	cp $(GITDIR)/benchmark/proof/*.v ./benchmark/proof
-	cp $(GITDIR)/clight/*.v ./clight
-	cp $(GITDIR)/clight/*.c ./clight
-	cp $(GITDIR)/clight/*.h ./clight
-	cp $(GITDIR)/proof/*.v ./proof
-	cp $(GITDIR)/proof/correctproof/*.v ./proof/correctproof
-	cp $(GITDIR)/repatch/*.c ./repatch
-	cp $(GITDIR)/Makefile .
-	cp $(GITDIR)/Makefile.config .
-	cp $(GITDIR)/_CoqProject .
-	cp $(GITDIR)/compcertsrc-I .
-	cp $(GITDIR)/compcertcprinter-cmx-args .
-	cp $(GITDIR)/*.md .
-
 clean :
 	@echo $@
 	make -f CoqMakefile clean
@@ -240,4 +149,4 @@ clean :
 # We want to keep the .cmi that were built as we go
 .SECONDARY:
 
-.PHONY: all test bench bench_clight comm model equivalence compile extract repatch clight proof correctproof clean
+.PHONY: all test comm model equivalence compile extract repatch clight proof correctproof clean
