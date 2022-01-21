@@ -25,7 +25,7 @@ To install CertirBPF (and dx), you will require:
 -   Linux (e.g. Ubuntu)
 -   `make` (and standard tools: `sed`, `awk`, `cat`)
 -   Coq
--   [coq-elpi]
+-   coq-elpi
 -   CompCert32 (version 3.9)
 -   VST32 (version 2.8)
 -   OCaml compiler
