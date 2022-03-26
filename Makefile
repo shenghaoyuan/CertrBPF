@@ -182,6 +182,8 @@ gitpush:
 	cp Makefile $(GITDIR)
 	cp compcertcprinter-cmx-args $(GITDIR)
 	cp *.md $(GITDIR)
+	cp _CoqProject $(GITDIR)
+	cp Makefile.config $(GITDIR)
 	cp verifier/Makefile $(GITDIR)/verifier
 	cp verifier/Makefile.config $(GITDIR)/verifier
 	cp verifier/compcertcprinter-cmx-args $(GITDIR)/verifier

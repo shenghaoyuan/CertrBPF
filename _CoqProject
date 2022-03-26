@@ -5,7 +5,8 @@ INSTALLDEFAULTROOT = comm
 -R monadicmodel bpf.monadicmodel
 -R simulation bpf.simulation
 -R isolation bpf.isolation
--R src bpf.src
+-R dxmodel bpf.dxmodel
 -R /home/shyuan/.opam/4.11.1/lib/coq-variant/compcert32/compcert compcert
--R proof bpf.proof
+-R clightlogic bpf.clightlogic
 -R clight bpf.clight
+-R verifier bpf.verifier
