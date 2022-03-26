@@ -1,7 +1,7 @@
 From compcert Require Import Memory Memtype Integers Values Ctypes AST.
 From Coq Require Import ZArith Lia.
 
-From bpf.comm Require Import Flag rBPFValues Regs State Monad MemRegion rBPFAST rBPFMemType.
+From bpf.comm Require Import Flag rBPFValues Regs BinrBPF State Monad MemRegion rBPFAST rBPFMemType.
 From bpf.model Require Import Syntax Decode.
 
 Open Scope Z_scope.

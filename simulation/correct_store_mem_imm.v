@@ -6,7 +6,7 @@ Import ListNotations.
 
 From bpf.clight Require Import interpreter.
 
-From bpf.proof Require Import MatchState Clightlogic clight_exec CommonLemma CorrectRel.
+From bpf.clightlogic Require Import MatchState Clightlogic clight_exec CommonLemma CorrectRel.
 
 (**
 

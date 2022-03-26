@@ -7,7 +7,7 @@ From compcert Require Import Integers Values Clight Memory AST.
 From compcert Require Import Coqlib.
 Import ListNotations.
 
-From bpf.proof Require Import clight_exec Clightlogic CorrectRel MatchState CommonLemma.
+From bpf.clightlogic Require Import clight_exec Clightlogic CorrectRel MatchState CommonLemma.
 
 From bpf.clight Require Import interpreter.
 

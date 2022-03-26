@@ -4,7 +4,7 @@ From compcert Require Import Integers Values Clight Memory.
 Import ListNotations.
 Require Import ZArith.
 
-From bpf.proof Require Import Clightlogic MatchState CorrectRel CommonLemma.
+From bpf.clightlogic Require Import Clightlogic MatchState CorrectRel CommonLemma.
 
 From bpf.clight Require Import interpreter.
 

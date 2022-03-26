@@ -1,10 +1,10 @@
-From bpf.comm Require Import Regs State Monad.
+From bpf.comm Require Import Regs BinrBPF State Monad.
 From bpf.monadicmodel Require Import rBPFInterpreter.
 From Coq Require Import List Lia ZArith.
 From compcert Require Import Integers Values Clight Memory.
 Import ListNotations.
 
-From bpf.proof Require Import Clightlogic MatchState CorrectRel CommonLemma.
+From bpf.clightlogic Require Import Clightlogic MatchState CorrectRel CommonLemma.
 
 From bpf.clight Require Import interpreter.
 
@@ -58,7 +58,7 @@ Section Get_src.
 
     unfold eval_inv, int64_correct in c0.
     subst.
-    unfold z_to_reg, Regs.get_src in Hsrc.
+    unfold z_to_reg, BinrBPF.get_src in Hsrc.
     simpl in c.
     exists (Vint (Int.repr (Int64.unsigned (Int64.shru (Int64.and c (Int64.repr 65535)) (Int64.repr 12))))), m, Events.E0.
 

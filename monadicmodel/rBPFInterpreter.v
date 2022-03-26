@@ -3,7 +3,7 @@ Import ListNotations.
 
 From compcert Require Import Integers Values AST Memory.
 
-From bpf.comm Require Import MemRegion rBPFValues rBPFAST rBPFMemType Flag Regs State Monad.
+From bpf.comm Require Import MemRegion rBPFValues rBPFAST rBPFMemType Flag Regs BinrBPF State Monad.
 From bpf.monadicmodel Require Import Opcode.
 
 Open Scope monad_scope.

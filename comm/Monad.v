@@ -1,6 +1,6 @@
 From compcert Require Import AST Integers Values Memory.
 
-From bpf.comm Require Import Regs Flag rBPFValues MemRegion State.
+From bpf.comm Require Import Regs BinrBPF Flag rBPFValues MemRegion State.
 From Coq Require Import ZArith.
 
 Definition M (A: Type) := state -> option (A * state).

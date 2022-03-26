@@ -1,5 +1,5 @@
 From compcert Require Import Integers Values.
-From bpf.comm Require Import Regs State LemmaNat.
+From bpf.comm Require Import Regs BinrBPF State LemmaNat.
 From bpf.model Require Import Semantics.
 From bpf.isolation Require Import AlignChunk CommonISOLib.
 From Coq Require Import ZArith Lia List.
@@ -74,7 +74,7 @@ Definition is_lddw (i: int64) : bool :=
 
 Definition well_jump (i: int64) (pc len: nat) : Prop :=
   if is_jump i then
-    let imm := Regs.get_offset i in
+    let imm := BinrBPF.get_offset i in
     let pc'  :=Int.add (Int.repr (Z.of_nat pc)) imm in
       Int.cmpu Clt pc' (Int.repr (Z.of_nat len)) = true
   else
@@ -107,9 +107,9 @@ Lemma verifier_inv_dst_reg:
   forall ins,
     well_dst ins ->
     exists r,
-      Regs.int64_to_dst_reg' ins = Some r.
+      BinrBPF.int64_to_dst_reg' ins = Some r.
 Proof.
-  unfold well_dst, Regs.int64_to_dst_reg'; intros.
+  unfold well_dst, BinrBPF.int64_to_dst_reg'; intros.
   unfold z_to_reg.
   remember (get_dst ins) as i.
   clear Heqi.
@@ -132,9 +132,9 @@ Lemma verifier_inv_src_reg :
   forall ins,
     well_src ins ->
     exists r,
-      Regs.int64_to_src_reg' ins = Some r.
+      BinrBPF.int64_to_src_reg' ins = Some r.
 Proof.
-  unfold well_src, Regs.int64_to_src_reg'; intros.
+  unfold well_src, BinrBPF.int64_to_src_reg'; intros.
   unfold z_to_reg.
   remember (get_src ins) as i.
   clear Heqi.

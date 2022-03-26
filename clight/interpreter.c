@@ -353,7 +353,7 @@ static __attribute__((always_inline)) inline unsigned char *check_mem_aux(struct
   }
 }
 
-static __attribute__((always_inline)) inline unsigned char *check_mem(struct bpf_state* st, unsigned int perm, unsigned int chunk, unsigned int addr)
+unsigned char *check_mem(struct bpf_state* st, unsigned int perm, unsigned int chunk, unsigned int addr)
 {
   _Bool well_chunk;
   unsigned int mem_reg_num;

@@ -1,5 +1,5 @@
 From compcert Require Import Integers Values AST Memory Memtype.
-From bpf.comm Require Import State Monad.
+From bpf.comm Require Import BinrBPF State Monad.
 From bpf.model Require Import Syntax Semantics.
 From bpf.isolation Require Import CommonISOLib AlignChunk RegsInv MemInv VerifierInv IsolationLemma.
 
@@ -84,7 +84,7 @@ Proof.
                 (Int64.shl'
                    (Int64.repr
                       (Int.signed
-                         (Regs.get_immediate
+                         (BinrBPF.get_immediate
                             (State.eval_ins
                                (Int.add (State.eval_pc st1) Int.one) st1))))
                    (Int.repr 32)))) st1)); auto.
@@ -96,7 +96,7 @@ Proof.
                 (Int64.shl'
                    (Int64.repr
                       (Int.signed
-                         (Regs.get_immediate
+                         (BinrBPF.get_immediate
                             (State.eval_ins
                                (Int.add (State.eval_pc st1) Int.one) st1))))
                    (Int.repr 32)))) st1)); auto.
@@ -206,7 +206,7 @@ Proof.
   destruct Hsrc as (src & Hsrc).
   rewrite Hdst, Hsrc.
 
-  remember (Nat.land (Regs.get_opcode (List.nth pc (ins st) Int64.zero)) 7) as Hand.
+  remember (Nat.land (BinrBPF.get_opcode (List.nth pc (ins st) Int64.zero)) 7) as Hand.
 
   clear HeqHand.
   destruct Hand.
@@ -215,7 +215,7 @@ Proof.
     unfold well_lddw, is_lddw in Hlddw.
     rewrite opcode_and_255.
 
-    remember (Regs.get_opcode (List.nth pc (ins st) Int64.zero)) as Hand24.
+    remember (BinrBPF.get_opcode (List.nth pc (ins st) Int64.zero)) as Hand24.
     do 24 (destruct Hand24; [intro Hfalse; inversion Hfalse |]).
     destruct Hand24.
     - destruct Int.ltu.
@@ -242,7 +242,7 @@ Proof.
     unfold Decode.get_instruction_ldx.
     rewrite opcode_and_255.
 
-    remember (Regs.get_opcode (List.nth pc (ins st) Int64.zero)) as Hand.
+    remember (BinrBPF.get_opcode (List.nth pc (ins st) Int64.zero)) as Hand.
     unfold step_load_x_operation.
     unfold eval_mem, eval_mem_regions, eval_reg, get_addr_ofs.
     unfold bindM, returnM.
@@ -265,7 +265,7 @@ Proof.
                (Int64.unsigned
                   (Int64.add i
                      (Int64.repr
-                        (Int.signed (Regs.get_offset (List.nth pc (ins st) Int64.zero))))))))
+                        (Int.signed (BinrBPF.get_offset (List.nth pc (ins st) Int64.zero))))))))
          st)) as res.
       symmetry in Heqres.
       unfold State.eval_mem.
@@ -311,7 +311,7 @@ Proof.
                (Int64.unsigned
                   (Int64.add i
                      (Int64.repr
-                        (Int.signed (Regs.get_offset (List.nth pc (ins st) Int64.zero))))))))
+                        (Int.signed (BinrBPF.get_offset (List.nth pc (ins st) Int64.zero))))))))
          st)) as res.
       symmetry in Heqres.
       unfold State.eval_mem.
@@ -357,7 +357,7 @@ Proof.
                (Int64.unsigned
                   (Int64.add i
                      (Int64.repr
-                        (Int.signed (Regs.get_offset (List.nth pc (ins st) Int64.zero))))))))
+                        (Int.signed (BinrBPF.get_offset (List.nth pc (ins st) Int64.zero))))))))
          st)) as res.
       symmetry in Heqres.
       unfold State.eval_mem.
@@ -403,7 +403,7 @@ Proof.
                (Int64.unsigned
                   (Int64.add i
                      (Int64.repr
-                        (Int.signed (Regs.get_offset (List.nth pc (ins st) Int64.zero))))))))
+                        (Int.signed (BinrBPF.get_offset (List.nth pc (ins st) Int64.zero))))))))
          st)) as res.
       symmetry in Heqres.
       unfold State.eval_mem.
@@ -449,7 +449,7 @@ Proof.
     eapply reg_inv_eval_reg in Hreg.
     destruct Hreg as (i & Hreg).
 
-    remember (Regs.get_opcode (List.nth pc (ins st) Int64.zero)) as Hand.
+    remember (BinrBPF.get_opcode (List.nth pc (ins st) Int64.zero)) as Hand.
     do 98 (destruct Hand; [intro Hfalse; inversion Hfalse |]).
     destruct Hand.
     {
@@ -465,7 +465,7 @@ Proof.
                (Int64.unsigned
                   (Int64.add i
                      (Int64.repr
-                        (Int.signed (Regs.get_offset (List.nth pc (ins st) Int64.zero))))))))
+                        (Int.signed (BinrBPF.get_offset (List.nth pc (ins st) Int64.zero))))))))
          st) as res.
       symmetry in Heqres.
       unfold State.eval_mem.
@@ -475,7 +475,7 @@ Proof.
           rewrite Hvalid.
           rewrite Int.eq_true.
           simpl.
-          remember (Regs.get_immediate
+          remember (BinrBPF.get_immediate
                  (List.nth (Z.to_nat (Int.unsigned (pc_loc st))) (ins st) Int64.zero)) as imm.
           eapply check_mem_store with (v:= Vint imm) in Hcheck_mem; eauto.
           unfold store_mem_imm, State.store_mem_imm.
@@ -509,7 +509,7 @@ Proof.
                (Int64.unsigned
                   (Int64.add i
                      (Int64.repr
-                        (Int.signed (Regs.get_offset (List.nth pc (ins st) Int64.zero))))))))
+                        (Int.signed (BinrBPF.get_offset (List.nth pc (ins st) Int64.zero))))))))
          st) as res.
       symmetry in Heqres.
       unfold State.eval_mem.
@@ -519,7 +519,7 @@ Proof.
           rewrite Hvalid.
           rewrite Int.eq_true.
           simpl.
-          remember (Regs.get_immediate
+          remember (BinrBPF.get_immediate
                  (List.nth (Z.to_nat (Int.unsigned (pc_loc st))) (ins st) Int64.zero)) as imm.
           eapply check_mem_store with (v:= Vint imm) in Hcheck_mem; eauto.
           unfold store_mem_imm, State.store_mem_imm.
@@ -553,7 +553,7 @@ Proof.
                (Int64.unsigned
                   (Int64.add i
                      (Int64.repr
-                        (Int.signed (Regs.get_offset (List.nth pc (ins st) Int64.zero))))))))
+                        (Int.signed (BinrBPF.get_offset (List.nth pc (ins st) Int64.zero))))))))
          st) as res.
       symmetry in Heqres.
       unfold State.eval_mem.
@@ -563,7 +563,7 @@ Proof.
           rewrite Hvalid.
           rewrite Int.eq_true.
           simpl.
-          remember (Regs.get_immediate
+          remember (BinrBPF.get_immediate
                  (List.nth (Z.to_nat (Int.unsigned (pc_loc st))) (ins st) Int64.zero)) as imm.
           eapply check_mem_store with (v:= Vint imm) in Hcheck_mem; eauto.
           unfold store_mem_imm, State.store_mem_imm.
@@ -597,7 +597,7 @@ Proof.
                (Int64.unsigned
                   (Int64.add i
                      (Int64.repr
-                        (Int.signed (Regs.get_offset (List.nth pc (ins st) Int64.zero))))))))
+                        (Int.signed (BinrBPF.get_offset (List.nth pc (ins st) Int64.zero))))))))
          st) as res.
       symmetry in Heqres.
       unfold State.eval_mem.
@@ -607,7 +607,7 @@ Proof.
           rewrite Hvalid.
           rewrite Int.eq_true.
           simpl.
-          remember (Regs.get_immediate
+          remember (BinrBPF.get_immediate
                  (List.nth (Z.to_nat (Int.unsigned (pc_loc st))) (ins st) Int64.zero)) as imm.
           eapply check_mem_store with (v:= Vint imm) in Hcheck_mem; eauto.
           unfold store_mem_imm, State.store_mem_imm.
@@ -644,7 +644,7 @@ Proof.
     destruct Hreg_dst as (r_dst & Hreg_dst).
     destruct Hreg_src as (r_src & Hreg_src).
 
-    remember (Regs.get_opcode (List.nth pc (ins st) Int64.zero)) as Hand.
+    remember (BinrBPF.get_opcode (List.nth pc (ins st) Int64.zero)) as Hand.
     do 99 (destruct Hand; [intro Hfalse; inversion Hfalse |]).
     destruct Hand.
     {
@@ -660,7 +660,7 @@ Proof.
                (Int64.unsigned
                   (Int64.add r_dst
                      (Int64.repr
-                        (Int.signed (Regs.get_offset (List.nth pc (ins st) Int64.zero))))))))
+                        (Int.signed (BinrBPF.get_offset (List.nth pc (ins st) Int64.zero))))))))
          st) as res.
       symmetry in Heqres.
       unfold State.eval_mem.
@@ -703,7 +703,7 @@ Proof.
                (Int64.unsigned
                   (Int64.add r_dst
                      (Int64.repr
-                        (Int.signed (Regs.get_offset (List.nth pc (ins st) Int64.zero))))))))
+                        (Int.signed (BinrBPF.get_offset (List.nth pc (ins st) Int64.zero))))))))
          st) as res.
       symmetry in Heqres.
       unfold State.eval_mem.
@@ -746,7 +746,7 @@ Proof.
                (Int64.unsigned
                   (Int64.add r_dst
                      (Int64.repr
-                        (Int.signed (Regs.get_offset (List.nth pc (ins st) Int64.zero))))))))
+                        (Int.signed (BinrBPF.get_offset (List.nth pc (ins st) Int64.zero))))))))
          st) as res.
       symmetry in Heqres.
       unfold State.eval_mem.
@@ -789,7 +789,7 @@ Proof.
                (Int64.unsigned
                   (Int64.add r_dst
                      (Int64.repr
-                        (Int.signed (Regs.get_offset (List.nth pc (ins st) Int64.zero))))))))
+                        (Int.signed (BinrBPF.get_offset (List.nth pc (ins st) Int64.zero))))))))
          st) as res.
       symmetry in Heqres.
       unfold State.eval_mem.
@@ -822,13 +822,13 @@ Proof.
 
   destruct Hand.
   { (**r ALU32 *)
-    remember (Regs.get_opcode (List.nth pc (ins st) Int64.zero)) as Hand.
+    remember (BinrBPF.get_opcode (List.nth pc (ins st) Int64.zero)) as Hand.
     match goal with
     | |- context[if ?X then _ else _] =>
       destruct X
     end.
     - (**r ALU32_IMM *)
-      remember (Regs.get_immediate (List.nth pc (ins st) Int64.zero)) as imm.
+      remember (BinrBPF.get_immediate (List.nth pc (ins st) Int64.zero)) as imm.
       unfold Decode.get_instruction_alu32_imm.
 
       unfold step_alu_binary_operation, eval_reg32, eval_src32, bindM, returnM.
@@ -902,17 +902,17 @@ Proof.
 
   destruct Hand.
   { (**r Branch *)
-    remember (Regs.get_opcode (List.nth pc (ins st) Int64.zero)) as Hand.
+    remember (BinrBPF.get_opcode (List.nth pc (ins st) Int64.zero)) as Hand.
     match goal with
     | |- context[if ?X then _ else _] =>
       destruct X
     end.
     - (**r Branch_IMM *)
-      remember (Regs.get_immediate (List.nth pc (ins st) Int64.zero)) as imm.
+      remember (BinrBPF.get_immediate (List.nth pc (ins st) Int64.zero)) as imm.
       unfold is_jump in Hjmp, HeqHand.
       unfold Decode.get_instruction_branch_imm.
       rewrite <- HeqHand in Hjmp.
-      remember (Regs.get_offset (List.nth pc (ins st) Int64.zero)) as ofs.
+      remember (BinrBPF.get_offset (List.nth pc (ins st) Int64.zero)) as ofs.
       rewrite Heqpc in Hjmp.
       rewrite Z2Nat.id in Hjmp; [| apply Int_unsigned_ge_0].
       rewrite Int.repr_unsigned in Hjmp.
@@ -972,7 +972,7 @@ Ltac destruct_if_jmp Hjmp :=
       unfold Decode.get_instruction_branch_reg.
       unfold is_jump in Hjmp, HeqHand.
       rewrite <- HeqHand in Hjmp.
-      remember (Regs.get_offset (List.nth pc (ins st) Int64.zero)) as ofs.
+      remember (BinrBPF.get_offset (List.nth pc (ins st) Int64.zero)) as ofs.
       rewrite Heqpc in Hjmp.
       rewrite Z2Nat.id in Hjmp; [| apply Int_unsigned_ge_0].
       rewrite Int.repr_unsigned in Hjmp.
@@ -999,13 +999,13 @@ Ltac destruct_if_jmp Hjmp :=
 
   destruct Hand.
   { (**r ALU64 *)
-    remember (Regs.get_opcode (List.nth pc (ins st) Int64.zero)) as Hand.
+    remember (BinrBPF.get_opcode (List.nth pc (ins st) Int64.zero)) as Hand.
     match goal with
     | |- context[if ?X then _ else _] =>
       destruct X
     end.
     - (**r ALU64_IMM *)
-      remember (Regs.get_immediate (List.nth pc (ins st) Int64.zero)) as imm.
+      remember (BinrBPF.get_immediate (List.nth pc (ins st) Int64.zero)) as imm.
       unfold Decode.get_instruction_alu64_imm.
 
       unfold step_alu_binary_operation, eval_src, eval_reg, upd_reg, bindM, Val.longofint, rBPFValues.sint32_to_vint, returnM.

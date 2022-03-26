@@ -1,0 +1,224 @@
+Inductive opcode :=
+  | ADD64_IMM | SUB64_IMM | MUL64_IMM | DIV64_IMM | OR64_IMM | AND64_IMM | LSH64_IMM
+  | RSH64_IMM | NEG64     | MOD64_IMM | XOR64_IMM | MOV64_IMM | ARSH64_IMM
+  | ADD64_REG | SUB64_REG | MUL64_REG | DIV64_REG | OR64_REG | AND64_REG | LSH64_REG
+  | RSH64_REG | MOD64_REG | XOR64_REG | MOV64_REG | ARSH64_REG
+  | ADD32_IMM | SUB32_IMM | MUL32_IMM | DIV32_IMM | OR32_IMM | AND32_IMM | LSH32_IMM
+  | RSH32_IMM | NEG32     | MOD32_IMM | XOR32_IMM | MOV32_IMM | ARSH32_IMM
+  | ADD32_REG | SUB32_REG | MUL32_REG | DIV32_REG | OR32_REG | AND32_REG | LSH32_REG
+  | RSH32_REG | MOD32_REG | XOR32_REG | MOV32_REG | ARSH32_REG
+  | LDDW
+  | LDXW | LDXH | LDXB | LDXDW | STW | STH | STB | STDW | STXW | STXH | STXB | STXDW
+  | JA | JEQ_IMM | JGT_IMM | JGE_IMM | JLT_IMM | JLE_IMM | JSET_IMM
+  | JNE_IMM | JSGT_IMM | JSGE_IMM | JSLT_IMM | JSLE_IMM
+  | JEQ_REG | JGT_REG | JGE_REG | JLT_REG | JLE_REG | JSET_REG
+  | JNE_REG | JSGT_REG | JSGE_REG | JSLT_REG | JSLE_REG
+  | CALL | EXIT
+  | ILLGEL.
+
+(*
+Lemma opcode_eq: forall (x y: opcode), {x=y} + {x<>y}.
+Proof.
+  decide equality.
+Defined. *)
+
+Definition opcode_eqb (x y: opcode) :=
+  match x, y with
+  | ADD64_IMM,  ADD64_IMM
+  | SUB64_IMM,  SUB64_IMM
+  | MUL64_IMM,  MUL64_IMM
+  | DIV64_IMM,  DIV64_IMM
+  | OR64_IMM,   OR64_IMM
+  | AND64_IMM,  AND64_IMM
+  | LSH64_IMM,  LSH64_IMM
+  | RSH64_IMM,  RSH64_IMM
+  | NEG64,      NEG64
+  | MOD64_IMM,  MOD64_IMM
+  | XOR64_IMM,  XOR64_IMM
+  | MOV64_IMM,  MOV64_IMM
+  | ARSH64_IMM, ARSH64_IMM
+
+  | ADD64_REG,  ADD64_REG
+  | SUB64_REG,  SUB64_REG
+  | MUL64_REG,  MUL64_REG
+  | DIV64_REG,  DIV64_REG
+  | OR64_REG,   OR64_REG
+  | AND64_REG,  AND64_REG
+  | LSH64_REG,  LSH64_REG
+  | RSH64_REG,  RSH64_REG
+  | MOD64_REG,  MOD64_REG
+  | XOR64_REG,  XOR64_REG
+  | MOV64_REG,  MOV64_REG
+  | ARSH64_REG, ARSH64_REG
+
+  | ADD32_IMM,  ADD32_IMM
+  | SUB32_IMM,  SUB32_IMM
+  | MUL32_IMM,  MUL32_IMM
+  | DIV32_IMM,  DIV32_IMM
+  | OR32_IMM,   OR32_IMM
+  | AND32_IMM,  AND32_IMM
+  | LSH32_IMM,  LSH32_IMM
+  | RSH32_IMM,  RSH32_IMM
+  | NEG32,      NEG32
+  | MOD32_IMM,  MOD32_IMM
+  | XOR32_IMM,  XOR32_IMM
+  | MOV32_IMM,  MOV32_IMM
+  | ARSH32_IMM, ARSH32_IMM
+
+  | ADD32_REG,  ADD32_REG
+  | SUB32_REG,  SUB32_REG
+  | MUL32_REG,  MUL32_REG
+  | DIV32_REG,  DIV32_REG
+  | OR32_REG,   OR32_REG
+  | AND32_REG,  AND32_REG
+  | LSH32_REG,  LSH32_REG
+  | RSH32_REG,  RSH32_REG
+  | MOD32_REG,  MOD32_REG
+  | XOR32_REG,  XOR32_REG
+  | MOV32_REG,  MOV32_REG
+  | ARSH32_REG, ARSH32_REG
+
+  | LDDW,  LDDW
+  | LDXW,  LDXW
+  | LDXH,  LDXH
+  | LDXB,  LDXB
+  | LDXDW, LDXDW
+  | STW,   STW
+  | STH,   STH
+  | STB,   STB
+  | STDW,  STDW
+  | STXW,  STXW
+  | STXH,  STXH
+  | STXB,  STXB
+  | STXDW, STXDW
+
+  | JA, JA
+  | JEQ_IMM,  JEQ_IMM
+  | JGT_IMM,  JGT_IMM
+  | JGE_IMM,  JGE_IMM
+  | JLT_IMM,  JLT_IMM
+  | JLE_IMM,  JLE_IMM
+  | JSET_IMM, JSET_IMM
+  | JNE_IMM,  JNE_IMM
+  | JSGT_IMM, JSGT_IMM
+  | JSGE_IMM, JSGE_IMM
+  | JSLT_IMM, JSLT_IMM
+  | JSLE_IMM, JSLE_IMM
+
+  | JEQ_REG,  JEQ_REG
+  | JGT_REG,  JGT_REG
+  | JGE_REG,  JGE_REG
+  | JLT_REG,  JLT_REG
+  | JLE_REG,  JLE_REG
+  | JSET_REG, JSET_REG
+  | JNE_REG,  JNE_REG
+  | JSGT_REG, JSGT_REG
+  | JSGE_REG, JSGE_REG
+  | JSLT_REG, JSLT_REG
+  | JSLE_REG, JSLE_REG
+  | CALL, CALL
+  | EXIT, EXIT
+  | ILLGEL, ILLGEL => true
+  | _, _ => false
+  end.
+
+
+Definition nat2opcode (n:nat) : opcode :=
+  match n with
+  | 0x07 => ADD64_IMM
+  | 0x17 => SUB64_IMM
+  | 0x27 => MUL64_IMM
+  | 0x37 => DIV64_IMM
+  | 0x47 => OR64_IMM
+  | 0x57 => AND64_IMM
+  | 0x67 => LSH64_IMM
+  | 0x77 => RSH64_IMM
+  | 0x87 => NEG64
+  | 0x97 => MOD64_IMM
+  | 0xa7 => XOR64_IMM
+  | 0xb7 => MOV64_IMM
+  | 0xc7 => ARSH64_IMM
+
+  | 0x0f => ADD64_REG
+  | 0x1f => SUB64_REG
+  | 0x2f => MUL64_REG
+  | 0x3f => DIV64_REG
+  | 0x4f => OR64_REG
+  | 0x5f => AND64_REG
+  | 0x6f => LSH64_REG
+  | 0x7f => RSH64_REG
+  | 0x9f => MOD64_REG
+  | 0xaf => XOR64_REG
+  | 0xbf => MOV64_REG
+  | 0xcf => ARSH64_REG
+
+  | 0x04 => ADD32_IMM
+  | 0x14 => SUB32_IMM
+  | 0x24 => MUL32_IMM
+  | 0x34 => DIV32_IMM
+  | 0x44 => OR32_IMM
+  | 0x54 => AND32_IMM
+  | 0x64 => LSH32_IMM
+  | 0x74 => RSH32_IMM
+  | 0x84 => NEG32
+  | 0x94 => MOD32_IMM
+  | 0xa4 => XOR32_IMM
+  | 0xb4 => MOV32_IMM
+  | 0xc4 => ARSH32_IMM
+
+  | 0x0c => ADD32_REG
+  | 0x1c => SUB32_REG
+  | 0x2c => MUL32_REG
+  | 0x3c => DIV32_REG
+  | 0x4c => OR32_REG
+  | 0x5c => AND32_REG
+  | 0x6c => LSH32_REG
+  | 0x7c => RSH32_REG
+  | 0x9c => MOD32_REG
+  | 0xac => XOR32_REG
+  | 0xbc => MOV32_REG
+  | 0xcc => ARSH32_REG
+
+  | 0x18 => LDDW
+  | 0x61 => LDXW
+  | 0x69 => LDXH
+  | 0x71 => LDXB
+  | 0x79 => LDXDW
+  | 0x62 => STW
+  | 0x6a => STH
+  | 0x72 => STB
+  | 0x7a => STDW
+  | 0x63 => STXW
+  | 0x6b => STXH
+  | 0x73 => STXB
+  | 0x7b => STXDW
+
+  | 0x05 => JA
+  | 0x15 => JEQ_IMM
+  | 0x25 => JGT_IMM
+  | 0x35 => JGE_IMM
+  | 0xa5 => JLT_IMM
+  | 0xb5 => JLE_IMM
+  | 0x45 => JSET_IMM
+  | 0x55 => JNE_IMM
+  | 0x65 => JSGT_IMM
+  | 0x75 => JSGE_IMM
+  | 0xc5 => JSLT_IMM
+  | 0xd5 => JSLE_IMM
+  | 0x85 => CALL
+  | 0x95 => EXIT
+
+  | 0x1d => JEQ_REG
+  | 0x2d => JGT_REG
+  | 0x3d => JGE_REG
+  | 0xad => JLT_REG
+  | 0xbd => JLE_REG
+  | 0x4d => JSET_REG
+  | 0x5d => JNE_REG
+  | 0x6d => JSGT_REG
+  | 0x7d => JSGE_REG
+  | 0xcd => JSLT_REG
+  | 0xdd => JSLE_REG
+
+  | _    => ILLGEL
+  end.

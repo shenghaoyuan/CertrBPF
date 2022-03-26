@@ -38,23 +38,38 @@ all:
 	@$(MAKE) simulation
 	@$(MAKE) isolation
 	@$(MAKE) equivalence
+	@$(MAKE) verifier
+
+COQVERIFIER =  $(addprefix verifier/, comm/state.v comm/monad.v synthesismodel/opcode.v synthesismodel/verifier.v dxmodel/Dxopcode.v dxmodel/Dxstate.v dxmodel/Dxmonad.v dxmodel/Dxverifier.v dxmodel/verifier_dx.v dxmodel/verifier_TestMain.v dxmodel/verifier_ExtrMain.v)
 
 COQMODEL =  $(addprefix model/, Syntax.v Decode.v Semantics.v)
-COQEMONADIC =  $(addprefix monadicmodel/, Opcode.v rBPFInterpreter.v)
-COQSRC =  $(addprefix src/, InfComp.v GenMatchable.v CoqIntegers.v DxIntegers.v DxValues.v DxNat.v DxAST.v DxFlag.v DxList64.v DxOpcode.v IdentDef.v DxMemType.v DxMemRegion.v DxRegs.v DxState.v DxMonad.v DxInstructions.v Tests.v TestMain.v ExtrMain.v)
-COQEQUIV =  $(addprefix equivalence/, equivalence1.v equivalence2.v)
-COQISOLATION = $(addprefix isolation/, CommonISOLib.v AlignChunk.v RegsInv.v MemInv.v VerifierInv.v IsolationLemma.v Isolation.v)
-COQCOMM = $(addprefix comm/, Flag.v LemmaNat.v List64.v rBPFAST.v rBPFMemType.v rBPFValues.v MemRegion.v Regs.v State.v Monad.v)
 
-#COQCOMM = $(wildcard comm/*.v)
-#COQMODEL = $(wildcard model/*.v)
-#COQSRC = $(wildcard src/*.v)
+COQEMONADIC =  $(addprefix monadicmodel/, Opcode.v rBPFInterpreter.v)
+
+COQDXMODEL =  $(addprefix dxmodel/, DxIntegers.v DxValues.v DxNat.v DxAST.v DxFlag.v DxList64.v DxOpcode.v IdentDef.v DxMemType.v DxMemRegion.v DxRegs.v DxBinrBPF.v DxState.v DxMonad.v DxInstructions.v Tests.v TestMain.v ExtrMain.v)
+
+COQEQUIV =  $(addprefix equivalence/, equivalence1.v equivalence2.v)
+
+COQISOLATION = $(addprefix isolation/, CommonISOLib.v AlignChunk.v RegsInv.v MemInv.v VerifierInv.v IsolationLemma.v Isolation.v)
+
+COQCOMM = $(addprefix comm/, Flag.v LemmaNat.v List64.v rBPFAST.v rBPFMemType.v rBPFValues.v MemRegion.v Regs.v BinrBPF.v State.v Monad.v InfComp.v GenMatchable.v CoqIntegers.v)
 
 comm:
 	@echo $@
 #	rm -f comm/*.vo
 	$(COQMAKEFILE) -f _CoqProject $(COQCOMM) COQEXTRAFLAGS = '-w all,-extraction'  -o CoqMakefile
 	make -f CoqMakefile
+
+verifier:
+	@echo $@
+	$(COQMAKEFILE) -f _CoqProject $(COQVERIFIER) COQEXTRAFLAGS = '-w all,-extraction'  -o CoqMakefile
+	make -f CoqMakefile
+	$(CP) verifier_TestMain.ml verifier/dxmodel
+	$(CP) verifier_TestMain.mli verifier/dxmodel
+	
+dxverifier:
+	@echo $@
+	cd verifier && $(MAKE) verifier-all
 
 model:
 	@echo $@
@@ -81,11 +96,10 @@ equivalence:
 
 compile:
 	@echo $@
-#	rm -f src/*.vo
-	$(COQMAKEFILE) -f _CoqProject $(COQSRC) COQEXTRAFLAGS = '-w all,-extraction'  -o CoqMakefile
+	$(COQMAKEFILE) -f _CoqProject $(COQDXMODEL) COQEXTRAFLAGS = '-w all,-extraction'  -o CoqMakefile
 	make -f CoqMakefile
-	$(CP) TestMain.ml src # mv -> cp to avoid when running `make` again, it doesn't find the two files
-	$(CP) TestMain.mli src
+	$(CP) TestMain.ml dxmodel # mv -> cp to avoid when running `make` again, it doesn't find the two files
+	$(CP) TestMain.mli dxmodel
 
 extract:
 	@echo $@
@@ -103,17 +117,17 @@ extract:
 	            }' > compcertsrc-I	
 	$(COMPCERTSRCDIR)/tools/modorder $(COMPCERTSRCDIR)/.depend.extr cfrontend/PrintCsyntax.cmx | \
 	    $(AWK) 'BEGIN { RS=" " } /cmx/ { gsub(".*/","") ; print }' > compcertcprinter-cmx-args
-	$(OCAMLOPT) -args compcertsrc-I -I $(DXDIR)/extr -I $(DXDIR)/src -I src src/TestMain.mli	
-	$(OCAMLOPT) -args compcertsrc-I -I $(DXDIR)/extr -I $(DXDIR)/src -I src -c src/TestMain.ml
+	$(OCAMLOPT) -args compcertsrc-I -I $(DXDIR)/extr -I $(DXDIR)/src -I dxmodel dxmodel/TestMain.mli	
+	$(OCAMLOPT) -args compcertsrc-I -I $(DXDIR)/extr -I $(DXDIR)/src -I dxmodel -c dxmodel/TestMain.ml
 	$(OCAMLOPT) -args compcertsrc-I -a -args compcertcprinter-cmx-args -o compcertcprinter.cmxa
 	$(OCAMLOPT) -args compcertsrc-I -a -args compcertcprinter-cmx-args -o compcertcprinter.a
-	$(OCAMLOPT) -args compcertsrc-I str.cmxa unix.cmxa compcertcprinter.cmxa $(DXDIR)/extr/ResultMonad.cmx $(DXDIR)/extr/DXModule.cmx $(DXDIR)/extr/DumpAsC.cmx src/TestMain.cmx -o src/main
-	ln -sf $(COMPCERTSRCDIR)/compcert.ini src/compcert.ini
-	cd src && ./main
+	$(OCAMLOPT) -args compcertsrc-I str.cmxa unix.cmxa compcertcprinter.cmxa $(DXDIR)/extr/ResultMonad.cmx $(DXDIR)/extr/DXModule.cmx $(DXDIR)/extr/DumpAsC.cmx dxmodel/TestMain.cmx -o dxmodel/main
+	ln -sf $(COMPCERTSRCDIR)/compcert.ini dxmodel/compcert.ini
+	cd dxmodel && ./main
 
 repatch:
 	@echo $@
-	$(CP) src/generated.c repatch
+	$(CP) dxmodel/generated.c repatch
 	cd repatch && $(CC) -o repatch1 repatch1.c && ./repatch1 && $(CC) -o repatch2 repatch2.c && ./repatch2 && $(CC) -o repatch3 repatch3.c && ./repatch3 && $(CC) -o repatch4 repatch4.c && ./repatch4
 	$(CP) repatch/interpreter.c clight
 
@@ -129,12 +143,11 @@ PROOF = $(addprefix simulation/, correct_eval_pc.v correct_upd_pc.v correct_upd_
 # TBC: store_mem_imm store_mem_reg step_opcode_mem_st_imm step_opcode_mem_st_reg step bpf_interpreter_aux bpf_interpreter
 # useless: correct_get_block_ptr.v 
 
-CLIGHTLOGICDIR =  $(addprefix proof/, clight_exec.v Clightlogic.v CommonLib.v CommonLemma.v MatchState.v CorrectRel.v CommonLemmaNat.v)
+CLIGHTLOGICDIR =  $(addprefix clightlogic/, clight_exec.v Clightlogic.v CommonLib.v CommonLemma.v MatchState.v CorrectRel.v CommonLemmaNat.v)
 
 
 clightlogic:
 	@echo $@
-#	rm -f proof/*.vo
 	$(COQMAKEFILE) -f _CoqProject $(CLIGHTLOGICDIR) COQEXTRAFLAGS = '-w all,-extraction'  -o CoqMakefilePrf
 	make -f CoqMakefilePrf
 
@@ -147,8 +160,8 @@ GITDIR=/home/shyuan/GitLab/rbpf-dx
 
 gitpush:
 	@echo $@
-	cp src/*.v $(GITDIR)/src
-	cp src/*.c $(GITDIR)/src
+	cp dxmodel/*.v $(GITDIR)/dxmodel
+	cp dxmodel/*.c $(GITDIR)/dxmodel
 	cp comm/*.v $(GITDIR)/comm
 	cp comm/*.md $(GITDIR)/comm
 	cp model/*.v $(GITDIR)/model
@@ -163,17 +176,27 @@ gitpush:
 	cp clight/*.v $(GITDIR)/clight
 	cp clight/*.c $(GITDIR)/clight
 	cp clight/*.h $(GITDIR)/clight
-	cp proof/*.v $(GITDIR)/proof
-	cp proof/*.md $(GITDIR)/proof
+	cp clightlogic/*.v $(GITDIR)/clightlogic
+	cp clightlogic/*.md $(GITDIR)/clightlogic
 	cp repatch/*.c $(GITDIR)/repatch
 	cp Makefile $(GITDIR)
 	cp compcertcprinter-cmx-args $(GITDIR)
 	cp *.md $(GITDIR)
+	cp verifier/Makefile $(GITDIR)/verifier
+	cp verifier/Makefile.config $(GITDIR)/verifier
+	cp verifier/compcertcprinter-cmx-args $(GITDIR)/verifier
+	cp verifier/*.md $(GITDIR)/verifier
+	cp verifier/clightmodel/*.h $(GITDIR)/verifier/clightmodel
+	cp verifier/clightmodel/*.c $(GITDIR)/verifier/clightmodel
+	cp verifier/comm/*.v $(GITDIR)/verifier/comm
+	cp verifier/dxmodel/*.v $(GITDIR)/verifier/dxmodel
+	cp verifier/repatch/*.c $(GITDIR)/verifier/repatch
+	cp verifier/synthesismodel/*.v $(GITDIR)/verifier/synthesismodel
 
 gitpull:
 	@echo $@
-	cp $(GITDIR)/src/*.v ./src
-	cp $(GITDIR)/src/*.c ./src
+	cp $(GITDIR)/dxmodel/*.v ./dxmodel
+	cp $(GITDIR)/dxmodel/*.c ./dxmodel
 	cp $(GITDIR)/comm/*.v ./comm
 	cp $(GITDIR)/comm/*.md ./comm
 	cp $(GITDIR)/model/*.v ./model
@@ -188,12 +211,22 @@ gitpull:
 	cp $(GITDIR)/clight/*.v ./clight
 	cp $(GITDIR)/clight/*.c ./clight
 	cp $(GITDIR)/clight/*.h ./clight
-	cp $(GITDIR)/proof/*.v ./proof
-	cp $(GITDIR)/proof/*.md ./proof
+	cp $(GITDIR)/clightlogic/*.v ./clightlogic
+	cp $(GITDIR)/clightlogic/*.md ./clightlogic
 	cp $(GITDIR)/repatch/*.c ./repatch
 	cp $(GITDIR)/Makefile .
 	cp $(GITDIR)/compcertcprinter-cmx-args .
 	cp $(GITDIR)/*.md .
+	cp $(GITDIR)/verifier/Makefile ./verifier
+	cp $(GITDIR)/verifier/Makefile.config ./verifier
+	cp $(GITDIR)/verifier/compcertcprinter-cmx-args ./verifier
+	cp $(GITDIR)/verifier/*.md ./verifier
+	cp $(GITDIR)/verifier/clightmodel/*.h ./verifier/clightmodel
+	cp $(GITDIR)/verifier/clightmodel/*.c ./verifier/clightmodel
+	cp $(GITDIR)/verifier/comm/*.v ./verifier/comm
+	cp $(GITDIR)/verifier/dxmodel/*.v ./verifier/dxmodel
+	cp $(GITDIR)/verifier/repatch/*.c ./verifier/repatch
+	cp $(GITDIR)/verifier/synthesismodel/*.v ./verifier/synthesismodel
 
 clean :
 	@echo $@
@@ -208,4 +241,4 @@ clean :
 # We want to keep the .cmi that were built as we go
 .SECONDARY:
 
-.PHONY: all test comm model monadicmodel isolation equivalence compile extract repatch clightmodel proof simulation clean
+.PHONY: all test comm verifier model monadicmodel isolation equivalence compile extract repatch clightmodel clightlogic simulation clean

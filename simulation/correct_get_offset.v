@@ -1,10 +1,10 @@
-From bpf.comm Require Import Regs State Monad.
+From bpf.comm Require Import Regs BinrBPF State Monad.
 From bpf.monadicmodel Require Import rBPFInterpreter.
 From Coq Require Import List Lia ZArith.
 From compcert Require Import Integers Values Clight Memory.
 Import ListNotations.
 
-From bpf.proof Require Import Clightlogic MatchState CorrectRel CommonLemma.
+From bpf.clightlogic Require Import Clightlogic MatchState CorrectRel CommonLemma.
 
 From bpf.clight Require Import interpreter.
 
@@ -62,7 +62,7 @@ Section Get_offset.
       repeat forward_star.
     }
     {
-      unfold match_res, int32_correct, Regs.get_offset; simpl.
+      unfold match_res, int32_correct, BinrBPF.get_offset; simpl.
       (**r according to the clight representation, we delete the self-defined library int16 in order to simplify the proof here *)
       reflexivity.
     }

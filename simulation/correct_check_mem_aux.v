@@ -1,14 +1,14 @@
 From Coq Require Import List ZArith.
 Import ListNotations.
 From dx Require Import ResultMonad IR.
-From bpf.comm Require Import MemRegion Regs State Monad rBPFAST rBPFValues.
+From bpf.comm Require Import MemRegion Regs BinrBPF State Monad rBPFAST rBPFValues.
 From bpf.monadicmodel Require Import rBPFInterpreter.
 
 From compcert Require Import Coqlib Values AST Clight Memory Memtype Integers.
 
 From bpf.clight Require Import interpreter.
 
-From bpf.proof Require Import MatchState Clightlogic clight_exec CommonLemma CorrectRel.
+From bpf.clightlogic Require Import MatchState Clightlogic clight_exec CommonLemma CorrectRel.
 
 From bpf.simulation Require Import correct_check_mem_aux2 correct_get_mem_region correct_cmp_ptr32_nullM.
 
@@ -262,7 +262,7 @@ Qed.
 
     unfold INV; intro H.
     correct_Forall. simpl in H.
-    get_invariant _check_mem.
+    get_invariant _check_mem__1.
     exists (v::nil).
     split.
     unfold map_opt, exec_expr.
@@ -279,7 +279,7 @@ Qed.
       eapply correct_body_Sreturn_Some.
       intros.
       simpl in H0.
-      get_invariant _check_mem.
+      get_invariant _check_mem__1.
       eexists ; split_and.
       -
         unfold exec_expr. rewrite p0. reflexivity.

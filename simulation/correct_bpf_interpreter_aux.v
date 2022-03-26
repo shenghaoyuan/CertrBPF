@@ -8,7 +8,7 @@ From compcert Require Import Coqlib Values AST Clight Memory Memtype Integers.
 
 From bpf.clight Require Import interpreter.
 
-From bpf.proof Require Import MatchState Clightlogic clight_exec CommonLemma CorrectRel.
+From bpf.clightlogic Require Import MatchState Clightlogic clight_exec CommonLemma CorrectRel.
 
 From bpf.simulation Require Import correct_upd_flag correct_eval_ins_len correct_eval_pc correct_eval_flag correct_step correct_upd_pc_incr.
 

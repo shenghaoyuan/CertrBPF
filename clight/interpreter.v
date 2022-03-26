@@ -1006,7 +1006,7 @@ Definition f_check_mem_aux := {|
   fn_vars := nil;
   fn_temps := ((_n, tuint) ::
                (_cur_mr, (tptr (Tstruct _memory_region noattr))) ::
-               (_check_mem, (tptr tuchar)) :: (_is_null, tbool) ::
+               (_check_mem__1, (tptr tuchar)) :: (_is_null, tbool) ::
                (_t'4, (tptr tuchar)) :: (_t'3, tbool) ::
                (_t'2, (tptr tuchar)) ::
                (_t'1, (tptr (Tstruct _memory_region noattr))) :: nil);
@@ -1043,13 +1043,13 @@ Definition f_check_mem_aux := {|
             ((Etempvar _cur_mr (tptr (Tstruct _memory_region noattr))) ::
              (Etempvar _perm tuint) :: (Etempvar _addr tuint) ::
              (Etempvar _chunk tuint) :: nil))
-          (Sset _check_mem (Etempvar _t'2 (tptr tuchar))))
+          (Sset _check_mem__1 (Etempvar _t'2 (tptr tuchar))))
         (Ssequence
           (Ssequence
             (Scall (Some _t'3)
               (Evar _cmp_ptr32_nullM (Tfunction (Tcons (tptr tuchar) Tnil)
                                        tbool cc_default))
-              ((Etempvar _check_mem (tptr tuchar)) :: nil))
+              ((Etempvar _check_mem__1 (tptr tuchar)) :: nil))
             (Sset _is_null (Ecast (Etempvar _t'3 tbool) tbool)))
           (Sifthenelse (Etempvar _is_null tbool)
             (Ssequence
@@ -1071,7 +1071,7 @@ Definition f_check_mem_aux := {|
                  (Etempvar _mrs (tptr (Tstruct _memory_region noattr))) ::
                  nil))
               (Sreturn (Some (Etempvar _t'4 (tptr tuchar)))))
-            (Sreturn (Some (Etempvar _check_mem (tptr tuchar))))))))))
+            (Sreturn (Some (Etempvar _check_mem__1 (tptr tuchar))))))))))
 |}.
 
 Definition f_check_mem := {|
@@ -3837,26 +3837,26 @@ Definition global_definitions : list (ident * globdef fundef type) :=
  (_bpf_interpreter, Gfun(Internal f_bpf_interpreter)) :: nil).
 
 Definition public_idents : list ident :=
-(_bpf_interpreter :: ___builtin_debug :: ___builtin_write32_reversed ::
- ___builtin_write16_reversed :: ___builtin_read32_reversed ::
- ___builtin_read16_reversed :: ___builtin_fnmsub :: ___builtin_fnmadd ::
- ___builtin_fmsub :: ___builtin_fmadd :: ___builtin_fmin ::
- ___builtin_fmax :: ___compcert_i64_umulh :: ___compcert_i64_smulh ::
- ___compcert_i64_sar :: ___compcert_i64_shr :: ___compcert_i64_shl ::
- ___compcert_i64_umod :: ___compcert_i64_smod :: ___compcert_i64_udiv ::
- ___compcert_i64_sdiv :: ___compcert_i64_utof :: ___compcert_i64_stof ::
- ___compcert_i64_utod :: ___compcert_i64_stod :: ___compcert_i64_dtou ::
- ___compcert_i64_dtos :: ___builtin_expect :: ___builtin_unreachable ::
- ___compcert_va_composite :: ___compcert_va_float64 ::
- ___compcert_va_int64 :: ___compcert_va_int32 :: ___builtin_va_end ::
- ___builtin_va_copy :: ___builtin_va_arg :: ___builtin_va_start ::
- ___builtin_membar :: ___builtin_annot_intval :: ___builtin_annot ::
- ___builtin_sel :: ___builtin_memcpy_aligned :: ___builtin_sqrt ::
- ___builtin_fsqrt :: ___builtin_fabsf :: ___builtin_fabs ::
- ___builtin_ctzll :: ___builtin_ctzl :: ___builtin_ctz :: ___builtin_clzll ::
- ___builtin_clzl :: ___builtin_clz :: ___builtin_bswap16 ::
- ___builtin_bswap32 :: ___builtin_bswap :: ___builtin_bswap64 ::
- ___builtin_ais_annot :: nil).
+(_bpf_interpreter :: _check_mem :: ___builtin_debug ::
+ ___builtin_write32_reversed :: ___builtin_write16_reversed ::
+ ___builtin_read32_reversed :: ___builtin_read16_reversed ::
+ ___builtin_fnmsub :: ___builtin_fnmadd :: ___builtin_fmsub ::
+ ___builtin_fmadd :: ___builtin_fmin :: ___builtin_fmax ::
+ ___compcert_i64_umulh :: ___compcert_i64_smulh :: ___compcert_i64_sar ::
+ ___compcert_i64_shr :: ___compcert_i64_shl :: ___compcert_i64_umod ::
+ ___compcert_i64_smod :: ___compcert_i64_udiv :: ___compcert_i64_sdiv ::
+ ___compcert_i64_utof :: ___compcert_i64_stof :: ___compcert_i64_utod ::
+ ___compcert_i64_stod :: ___compcert_i64_dtou :: ___compcert_i64_dtos ::
+ ___builtin_expect :: ___builtin_unreachable :: ___compcert_va_composite ::
+ ___compcert_va_float64 :: ___compcert_va_int64 :: ___compcert_va_int32 ::
+ ___builtin_va_end :: ___builtin_va_copy :: ___builtin_va_arg ::
+ ___builtin_va_start :: ___builtin_membar :: ___builtin_annot_intval ::
+ ___builtin_annot :: ___builtin_sel :: ___builtin_memcpy_aligned ::
+ ___builtin_sqrt :: ___builtin_fsqrt :: ___builtin_fabsf ::
+ ___builtin_fabs :: ___builtin_ctzll :: ___builtin_ctzl :: ___builtin_ctz ::
+ ___builtin_clzll :: ___builtin_clzl :: ___builtin_clz ::
+ ___builtin_bswap16 :: ___builtin_bswap32 :: ___builtin_bswap ::
+ ___builtin_bswap64 :: ___builtin_ais_annot :: nil).
 
 Definition prog : Clight.program := 
   mkprogram composites global_definitions public_idents _main Logic.I.

@@ -1,10 +1,10 @@
-From bpf.comm Require Import Regs State Monad.
+From bpf.comm Require Import Regs BinrBPF State Monad.
 From bpf.monadicmodel Require Import Opcode rBPFInterpreter.
 From Coq Require Import List Lia ZArith.
 From compcert Require Import Integers Values Clight Memory.
 Import ListNotations.
 
-From bpf.proof Require Import Clightlogic MatchState CorrectRel CommonLemma CommonLemmaNat.
+From bpf.clightlogic Require Import Clightlogic MatchState CorrectRel CommonLemma CommonLemmaNat.
 
 From bpf.clight Require Import interpreter.
 
@@ -53,7 +53,7 @@ Section Get_opcode_ins.
     subst.
 
     eexists. exists m, Events.E0.
-    unfold match_res, opcode_correct, Regs.get_opcode.
+    unfold match_res, opcode_correct, BinrBPF.get_opcode.
 
     unfold Int64.and.
     change (Int64.unsigned (Int64.repr 255)) with 255%Z.
