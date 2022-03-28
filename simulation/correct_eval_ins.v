@@ -121,7 +121,14 @@ Section Eval_ins.
       unfold int64_correct.
       unfold eval_ins in Heval_ins.
       context_destruct_if_inversion.
-      reflexivity.
+      unfold State.eval_ins, List64.MyListIndexs32, List64.MyList.index_s32.
+      f_equal.
+      destruct nth_error eqn: Hnth.
+      apply nth_error_nth with (d:= Int64.zero) in Hnth.
+      auto.
+      rewrite nth_error_None in Hnth.
+      apply nth_overflow with (d:= Int64.zero) in Hnth.
+      auto.
     }
     constructor.
     unfold eval_ins in Heval_ins.

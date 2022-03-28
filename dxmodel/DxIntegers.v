@@ -80,6 +80,7 @@ Definition int64_8      := Int64.repr 8.
 Definition int64_12     := Int64.repr 12.
 Definition int64_32     := Int64.repr 32.
 Definition int64_48     := Int64.repr 48.
+Definition int64_0x95   := Int64.repr 0x95.
 Definition int64_0xfff  := Int64.repr 0xfff.
 Definition int64_0xffff := Int64.repr 0xffff.
 
@@ -506,6 +507,8 @@ Definition C_U64_32: Csyntax.expr :=
   Csyntax.Eval (Vlong int64_32) C_U64.
 Definition C_U64_48: Csyntax.expr :=
   Csyntax.Eval (Vlong int64_48) C_U64.
+Definition C_U64_0x95: Csyntax.expr :=
+  Csyntax.Eval (Vlong int64_0x95) C_U64.
 Definition C_U64_0xfff: Csyntax.expr :=
   Csyntax.Eval (Vlong int64_0xfff) C_U64.
 Definition C_U64_0xffff: Csyntax.expr :=
@@ -523,6 +526,7 @@ Definition Const_int64_8  := constant int64SymbolType int64_8  C_U64_8.
 Definition Const_int64_12 := constant int64SymbolType int64_12 C_U64_12.
 Definition Const_int64_32 := constant int64SymbolType int64_32 C_U64_32.
 Definition Const_int64_48 := constant int64SymbolType int64_48 C_U64_48.
+Definition Const_int64_0x95 := constant int64SymbolType int64_0x95 C_U64_0x95.
 Definition Const_int64_0xfff := constant int64SymbolType int64_0xfff C_U64_0xfff.
 Definition Const_int64_0xffff := constant int64SymbolType int64_0xffff C_U64_0xffff.
 
@@ -768,6 +772,7 @@ Module Exports. (*
   Definition Const_int64_12        := Const_int64_12.
   Definition Const_int64_32        := Const_int64_32.
   Definition Const_int64_48        := Const_int64_48.
+  Definition Const_int64_0x95      := Const_int64_0x95.
   Definition Const_int64_0xfff     := Const_int64_0xfff.
   Definition Const_int64_0xffff    := Const_int64_0xffff.
 

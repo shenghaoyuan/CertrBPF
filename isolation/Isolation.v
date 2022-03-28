@@ -60,49 +60,17 @@ Proof.
       split; [eapply mem_inv_upd_pc; eauto | unfold verifier_inv in *; simpl; assumption]].
   - (* BPF_JUMP *)
     eapply step_preserving_inv_branch; eauto.
-  - (* BPF_LDDW *)
-    destruct Int.ltu; simpl in Hsem.
-    match goal with
-    | H: match (if ?X then _ else _) with | _ => _ end = _ |- _ =>
-      destruct X; [| inversion H]
-    end.
-    change Int64.iwordsize' with (Int.repr 64) in Hsem.
-    unfold Int.ltu in Hsem.
-    change (Int.unsigned (Int.repr 32)) with 32 in Hsem.
-    change (Int.unsigned (Int.repr 64)) with 64 in Hsem.
+  - (* BPF_LDDW_low *)
+    unfold rBPFValues.sint32_to_vint in Hsem.
     simpl in Hsem.
-    match goal with
-    | H: match (if ?X then _ else _) with | _ => _ end = _ |- _ =>
-      destruct X; [| inversion H]
-    end.
-
     inversion Hsem; clear Hsem.
-    + split.
-      apply reg_inv_upd_pc_incr with (st1:= (State.upd_reg r
-          (Vlong
-             (Int64.or (Int64.repr (Int.signed i))
-                (Int64.shl'
-                   (Int64.repr
-                      (Int.signed
-                         (BinrBPF.get_immediate
-                            (State.eval_ins
-                               (Int.add (State.eval_pc st1) Int.one) st1))))
-                   (Int.repr 32)))) st1)); auto.
-      eapply reg_inv_upd_reg; eauto.
-      split.
-      apply mem_inv_upd_pc_incr with (st1:= (State.upd_reg r
-          (Vlong
-             (Int64.or (Int64.repr (Int.signed i))
-                (Int64.shl'
-                   (Int64.repr
-                      (Int.signed
-                         (BinrBPF.get_immediate
-                            (State.eval_ins
-                               (Int.add (State.eval_pc st1) Int.one) st1))))
-                   (Int.repr 32)))) st1)); auto.
-      unfold verifier_inv in *; simpl; assumption.
-    + inversion Hsem; split; [eapply reg_inv_upd_flag; eauto |
-        split; [eapply mem_inv_upd_flag; eauto | unfold verifier_inv in *; simpl; assumption]].
+    split; [eapply reg_inv_upd_reg; eauto |
+        split; [eapply mem_inv_upd_reg; eauto | unfold verifier_inv in *; simpl; assumption]].
+  - (* BPF_LDDW_high *)
+    unfold rBPFValues.sint32_to_vint in Hsem.
+    destruct Val.orl; inversion Hsem.
+    split; [eapply reg_inv_upd_reg; eauto |
+        split; [eapply mem_inv_upd_reg; eauto | unfold verifier_inv in *; simpl; assumption]].
   - (* BPF_LDX *)
     eapply step_preserving_inv_ld; eauto.
   - (* BPF_ST *)
@@ -216,25 +184,22 @@ Proof.
     rewrite opcode_and_255.
 
     remember (BinrBPF.get_opcode (List.nth pc (ins st) Int64.zero)) as Hand24.
-    do 24 (destruct Hand24; [intro Hfalse; inversion Hfalse |]).
+    do 16 (destruct Hand24; [intro Hfalse; inversion Hfalse |]).
     destruct Hand24.
-    - destruct Int.ltu.
-      + 
-        rewrite Heqpc in Hlddw.
-        rewrite Z2Nat.id in Hlddw; [| apply Int_unsigned_ge_0].
-        rewrite Int.repr_unsigned in Hlddw.
-        rewrite <- Hlen in Hlddw.
-        rewrite Hlddw.
-        simpl.
-        change (Int64.iwordsize') with (Int.repr 64).
-        change (Int.ltu (Int.repr 32) (Int.repr 64)) with true.
-        simpl.
-        unfold Int.cmpu in Hlddw.
-        rewrite Hlddw.
-        simpl.
+    - unfold rBPFValues.sint32_to_vint; simpl.
+      change (Int64.iwordsize') with (Int.repr 64).
+      change (Int.ltu (Int.repr 32) (Int.repr 64)) with true.
+      simpl.
+      apply reg_inv_eval_reg with (r:= dst) in Hreg as Hdst_reg.
+      destruct Hdst_reg as (i & Hdst_reg).
+      rewrite Hdst_reg.
+      simpl.
+      intro Hfalse; inversion Hfalse.
+    - do 7 (destruct Hand24; [intro Hfalse; inversion Hfalse |]).
+      destruct Hand24.
+      + unfold rBPFValues.sint32_to_vint; simpl.
         intro Hfalse; inversion Hfalse.
       + intro Hfalse; inversion Hfalse.
-    - intro Hfalse; inversion Hfalse.
   }
 
   destruct Hand.

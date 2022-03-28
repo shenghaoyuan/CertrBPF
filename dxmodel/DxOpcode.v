@@ -13,114 +13,6 @@ From bpf.monadicmodel Require Import Opcode.
 
 (******************** Dx related *******************)
 
-Definition opcode_alu64_eqb  (o o' : opcode_alu64): bool :=
-  match o , o' with
-  | op_BPF_ADD64, op_BPF_ADD64
-  | op_BPF_SUB64, op_BPF_SUB64
-  | op_BPF_MUL64, op_BPF_MUL64
-  | op_BPF_DIV64, op_BPF_DIV64
-  | op_BPF_OR64,  op_BPF_OR64
-  | op_BPF_AND64, op_BPF_AND64
-  | op_BPF_LSH64, op_BPF_LSH64
-  | op_BPF_RSH64, op_BPF_RSH64
-  | op_BPF_NEG64,  op_BPF_NEG64
-  | op_BPF_MOD64, op_BPF_MOD64
-  | op_BPF_XOR64, op_BPF_XOR64
-  | op_BPF_MOV64, op_BPF_MOV64
-  | op_BPF_ARSH64,op_BPF_ARSH64
-  | op_BPF_ALU64_ILLEGAL_INS, op_BPF_ALU64_ILLEGAL_INS => true
-  | _, _ => false
-  end.
-
-Definition opcode_alu32_eqb  (o o' : opcode_alu32) : bool :=
-  match o , o' with
-  | op_BPF_ADD32, op_BPF_ADD32
-  | op_BPF_SUB32, op_BPF_SUB32
-  | op_BPF_MUL32, op_BPF_MUL32
-  | op_BPF_DIV32, op_BPF_DIV32
-  | op_BPF_OR32,  op_BPF_OR32
-  | op_BPF_AND32, op_BPF_AND32
-  | op_BPF_LSH32, op_BPF_LSH32
-  | op_BPF_RSH32, op_BPF_RSH32
-  | op_BPF_NEG32,  op_BPF_NEG32
-  | op_BPF_MOD32, op_BPF_MOD32
-  | op_BPF_XOR32, op_BPF_XOR32
-  | op_BPF_MOV32, op_BPF_MOV32
-  | op_BPF_ALU32_ILLEGAL_INS, op_BPF_ALU32_ILLEGAL_INS => true
-  | _, _ => false
-  end.
-
-Definition opcode_branch_eqb (o o' : opcode_branch): bool :=
-  match o , o' with
-  | op_BPF_JA,    op_BPF_JA
-  | op_BPF_JEQ,   op_BPF_JEQ
-  | op_BPF_JGT,   op_BPF_JGT
-  | op_BPF_JGE,   op_BPF_JGE
-  | op_BPF_JLT,   op_BPF_JLT
-  | op_BPF_JLE,   op_BPF_JLE
-  | op_BPF_JSET,  op_BPF_JSET
-  | op_BPF_JNE,   op_BPF_JNE
-  | op_BPF_JSGT,  op_BPF_JSGT
-  | op_BPF_JSGE,  op_BPF_JSGE
-  | op_BPF_JSLT,  op_BPF_JSLT
-  | op_BPF_JSLE,  op_BPF_JSLE
-  | op_BPF_RET,   op_BPF_RET
-  | op_BPF_JMP_ILLEGAL_INS, op_BPF_JMP_ILLEGAL_INS => true
-  | _, _ => false
-  end.
-
-Definition opcode_mem_ld_imm_eqb (o o' : opcode_mem_ld_imm): bool :=
-  match o , o' with
-  | op_BPF_LDDW,   op_BPF_LDDW
-  | op_BPF_LDX_IMM_ILLEGAL_INS, op_BPF_LDX_IMM_ILLEGAL_INS => true
-  | _, _ => false
-  end.
-
-Definition opcode_mem_ld_reg_eqb (o o' : opcode_mem_ld_reg): bool :=
-  match o , o' with
-  | op_BPF_LDXW,   op_BPF_LDXW
-  | op_BPF_LDXH,   op_BPF_LDXH
-  | op_BPF_LDXB,   op_BPF_LDXB
-  | op_BPF_LDXDW,  op_BPF_LDXDW
-  | op_BPF_LDX_REG_ILLEGAL_INS, op_BPF_LDX_REG_ILLEGAL_INS => true
-  | _, _ => false
-  end.
-
-Definition opcode_mem_st_imm_eqb (o o' : opcode_mem_st_imm): bool :=
-  match o , o' with
-  | op_BPF_STW,    op_BPF_STW
-  | op_BPF_STH,    op_BPF_STH
-  | op_BPF_STB,    op_BPF_STB
-  | op_BPF_STDW,   op_BPF_STDW
-  | op_BPF_ST_ILLEGAL_INS, op_BPF_ST_ILLEGAL_INS => true
-  | _, _ => false
-  end.
-
-Definition opcode_mem_st_reg_eqb (o o' : opcode_mem_st_reg): bool :=
-  match o , o' with
-  | op_BPF_STXW,   op_BPF_STXW
-  | op_BPF_STXH,   op_BPF_STXH
-  | op_BPF_STXB,   op_BPF_STXB
-  | op_BPF_STXDW,  op_BPF_STXDW
-  | op_BPF_STX_ILLEGAL_INS, op_BPF_STX_ILLEGAL_INS => true
-  | _, _ => false
-  end.
-
-Definition opcode_eqb (o o' : opcode) : bool :=
-  match o , o' with
-  | op_BPF_ALU64,      op_BPF_ALU64
-  | op_BPF_ALU32,      op_BPF_ALU32
-  | op_BPF_Branch,     op_BPF_Branch
-  | op_BPF_Mem_ld_imm, op_BPF_Mem_ld_imm
-  | op_BPF_Mem_ld_reg, op_BPF_Mem_ld_reg
-  | op_BPF_Mem_st_imm, op_BPF_Mem_st_imm
-  | op_BPF_Mem_st_reg, op_BPF_Mem_st_reg
-
-  | op_BPF_ILLEGAL_INS, op_BPF_ILLEGAL_INS => true
-  | _, _ => false
-  end.
-
-
 Open Scope Z_scope.
 Definition opcode_alu64CompilableType :=
   MkCompilableType opcode_alu64 C_U8.
@@ -199,7 +91,8 @@ Definition opcode_mem_ld_immCompilableTypeMatchableType : MatchableType:=
   Eval compute in
  (mkEnumMatchableType
     opcode_mem_ld_immCompilableType  opcode_mem_ld_imm_eqb
-    (     (op_BPF_LDDW, 0x18)
+    (      (op_BPF_LDDW_low,  0x18)
+        :: (op_BPF_LDDW_high, 0x10)
         :: nil)
     op_BPF_LDX_IMM_ILLEGAL_INS
     (fun m A => opcode_mem_ld_imm_rect (fun _ => m A))).

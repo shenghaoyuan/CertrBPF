@@ -122,6 +122,7 @@ static __attribute__((always_inline)) inline _Bool bpf_verifier_aux(struct verif
   _Bool b0;
   _Bool b;
   _Bool b;
+  _Bool b;
   _Bool b0;
   _Bool b;
   _Bool b0;
@@ -191,7 +192,7 @@ static __attribute__((always_inline)) inline _Bool bpf_verifier_aux(struct verif
   ins64 = eval_ins(st, pc - 1U - len);
   op = get_opcode(ins64);
   if (pc == 0U) {
-    return op == 149;
+    return ins64 == 149LLU;
   } else {
     n = pc - 1U;
     opc = nat2opcode(op);
@@ -667,9 +668,16 @@ static __attribute__((always_inline)) inline _Bool bpf_verifier_aux(struct verif
           return 0;
         }
       case 24:
-        b = is_well_jump(pc, len, 2);
+        b = is_well_dst(ins64);
         if (b) {
-          return bpf_verifier_aux(st, n - 1);
+          return bpf_verifier_aux(st, n);
+        } else {
+          return 0;
+        }
+      case 16:
+        b = is_well_dst(ins64);
+        if (b) {
+          return bpf_verifier_aux(st, n);
         } else {
           return 0;
         }

@@ -5,7 +5,7 @@ From dx.Type Require Bool Nat.
 From bpf.comm Require Import rBPFValues BinrBPF.
 From bpf.dxmodel Require Import DxIntegers DxNat.
 From bpf.verifier.comm Require Import state.
-From bpf.verifier.synthesismodel Require Import opcode.
+From bpf.verifier.proofmodel Require Import opcode.
 From bpf.verifier.dxmodel Require Import Dxmonad.
 
 Open Scope nat_scope.
@@ -32,13 +32,14 @@ Fixpoint bpf_verifier_aux (pc: nat): M bool := (**r pc: len-1, len-2, ... 0 *)
   do ins64<-- eval_ins (nat2int2 pc len); (**r len-pc: 0, 1, 2, etc... len -1 *)
   do op   <-- get_opcode ins64;
     match pc with
-    | O => returnM (Nat.eqb op nat8_0x95)
+    | O => returnM (Int64.eq ins64 int64_0x95)
     | S n =>
       do opc <-- nat2opcode op;
         match opc with
         (**r ALU_IMM *)
         | ADD64_IMM | SUB64_IMM | MUL64_IMM | OR64_IMM | AND64_IMM | NEG64 | XOR64_IMM | MOV64_IMM
         | ADD32_IMM | SUB32_IMM | MUL32_IMM | OR32_IMM | AND32_IMM | NEG32 | XOR32_IMM | MOV32_IMM
+        | LDDW_LOW | LDDW_HIGH
         | STW | STH | STB | STDW =>
           do b <-- is_well_dst ins64;
             if b then
@@ -64,14 +65,6 @@ Fixpoint bpf_verifier_aux (pc: nat): M bool := (**r pc: len-1, len-2, ... 0 *)
           do b <-- is_shift_range ins64 int32_32;
             if b then
               bpf_verifier_aux n
-            else
-              returnM false
-        (**r LDDW *)
-        | LDDW =>
-          (**r avoid lddw imm; imm; null: pc + 2 >= len *)
-          do b   <-- is_well_jump pc len int32_2;
-            if b then
-              bpf_verifier_aux (Nat.sub n nat8_1)
             else
               returnM false
         (**r we don't need to check pc + 1, check the len-1 is exit is enough *)

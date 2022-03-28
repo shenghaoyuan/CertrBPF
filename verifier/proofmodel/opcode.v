@@ -7,7 +7,7 @@ Inductive opcode :=
   | RSH32_IMM | NEG32     | MOD32_IMM | XOR32_IMM | MOV32_IMM | ARSH32_IMM
   | ADD32_REG | SUB32_REG | MUL32_REG | DIV32_REG | OR32_REG | AND32_REG | LSH32_REG
   | RSH32_REG | MOD32_REG | XOR32_REG | MOV32_REG | ARSH32_REG
-  | LDDW
+  | LDDW_LOW  | LDDW_HIGH
   | LDXW | LDXH | LDXB | LDXDW | STW | STH | STB | STDW | STXW | STXH | STXB | STXDW
   | JA | JEQ_IMM | JGT_IMM | JGE_IMM | JLT_IMM | JLE_IMM | JSET_IMM
   | JNE_IMM | JSGT_IMM | JSGE_IMM | JSLT_IMM | JSLE_IMM
@@ -78,7 +78,8 @@ Definition opcode_eqb (x y: opcode) :=
   | MOV32_REG,  MOV32_REG
   | ARSH32_REG, ARSH32_REG
 
-  | LDDW,  LDDW
+  | LDDW_LOW,  LDDW_LOW
+  | LDDW_HIGH, LDDW_HIGH
   | LDXW,  LDXW
   | LDXH,  LDXH
   | LDXB,  LDXB
@@ -179,7 +180,8 @@ Definition nat2opcode (n:nat) : opcode :=
   | 0xbc => MOV32_REG
   | 0xcc => ARSH32_REG
 
-  | 0x18 => LDDW
+  | 0x18 => LDDW_LOW
+  | 0x10 => LDDW_HIGH
   | 0x61 => LDXW
   | 0x69 => LDXH
   | 0x71 => LDXB

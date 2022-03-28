@@ -695,6 +695,32 @@ Ltac correct_forward L :=
         eapply correct_statement_seq_body_drop.
         intros.
 
+        (** goal: correct_body _ _ (bindM (eval_reg _) ... *)
+        correct_forward correct_statement_seq_body_nil.
+        my_reflex.
+        reflexivity.
+        reflexivity.
+        typeclasses eauto.
+
+        reflexivity.
+        reflexivity.
+        reflexivity.
+        prove_in_inv.
+        prove_in_inv.
+        reflexivity.
+        reflexivity.
+
+        unfold INV; intro H.
+        correct_Forall.
+        get_invariant _st.
+        get_invariant _dst.
+        exists (v::v0::nil).
+        split.
+        unfold map_opt, exec_expr. rewrite p0,p1; reflexivity.
+        intros; simpl.
+        intuition eauto.
+        intros.
+
         (** goal: correct_body _ _ (bindM (get_immediate _) ... *)
         correct_forward correct_statement_seq_body_nil.
         my_reflex.
@@ -721,26 +747,16 @@ Ltac correct_forward L :=
         intros.
 
         assert (Heq:
-              step_opcode_mem_ld_imm x4 x x3 x1 =
-              bindM (step_opcode_mem_ld_imm x4 x x3 x1) (fun _ : unit => returnM tt)). {
+              step_opcode_mem_ld_imm x5 x4 x x3 x1 =
+              bindM (step_opcode_mem_ld_imm x5 x4 x x3 x1) (fun _ : unit => returnM tt)). {
           clear - st6.
           unfold step_opcode_mem_ld_imm, get_opcode_mem_ld_imm.
           unfold bindM, returnM.
           destruct byte_to_opcode_mem_ld_imm; try reflexivity.
           apply Coq.Logic.FunctionalExtensionality.functional_extensionality.
           intros.
-          destruct eval_ins_len; try reflexivity.
-          destruct p0.
-          destruct Int.ltu; try reflexivity.
-          destruct eval_ins; try reflexivity.
-          destruct p0.
-          destruct get_immediate; try reflexivity.
-          destruct p0.
           unfold upd_reg.
           destruct Val.orl; try reflexivity.
-          destruct upd_pc_incr; try reflexivity.
-          destruct p0.
-          reflexivity.
         }
         rewrite Heq; clear Heq.
         eapply correct_statement_seq_body_unit.
@@ -762,12 +778,13 @@ Ltac correct_forward L :=
         correct_Forall.
         get_invariant _st.
         get_invariant _imm.
+        get_invariant _dst64.
         get_invariant _pc.
         get_invariant _dst.
         get_invariant _op.
-        exists (v ::v0::v1::v2 ::v3:: nil).
+        exists (v ::v0::v1::v2::v3::v4:: nil).
         unfold map_opt, exec_expr.
-        rewrite p0, p1, p2, p3, p4.
+        rewrite p0, p1, p2, p3, p4, p5.
         split.
         reflexivity.
         intros; simpl.

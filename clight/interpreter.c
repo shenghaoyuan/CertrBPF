@@ -667,28 +667,17 @@ static __attribute__((always_inline)) inline void step_opcode_branch(struct bpf_
   }
 }
 
-static __attribute__((always_inline)) inline void step_opcode_mem_ld_imm(struct bpf_state* st, int imm, unsigned int pc, unsigned int dst, unsigned char op)
+static __attribute__((always_inline)) inline void step_opcode_mem_ld_imm(struct bpf_state* st, int imm, unsigned long long dst64, unsigned int pc, unsigned int dst, unsigned char op)
 {
-  unsigned int len;
   unsigned char opcode_ld;
-  unsigned long long next_ins;
-  int next_imm;
-  len = eval_ins_len(st);
   opcode_ld = get_opcode_mem_ld_imm(op);
   switch (opcode_ld) {
     case 24:
-      if (pc + 1U < len) {
-        next_ins = eval_ins(st, pc + 1U);
-        next_imm = get_immediate(next_ins);
-        upd_reg(st, dst,
-                (unsigned long long) imm
-                  | (unsigned long long) next_imm << 32U);
-        upd_pc_incr(st);
-        return;
-      } else {
-        upd_flag(st, -5);
-        return;
-      }
+      upd_reg(st, dst, (unsigned long long) imm);
+      return;
+    case 16:
+      upd_reg(st, dst, dst64 | (unsigned long long) imm << 32U);
+      return;
     default:
       upd_flag(st, -1);
       return;
@@ -903,8 +892,9 @@ static __attribute__((always_inline)) inline void step(struct bpf_state* st)
                          (unsigned int) ofs, op);
       return;
     case 0:
+      dst64 = eval_reg(st, dst);
       imm = get_immediate(ins);
-      step_opcode_mem_ld_imm(st, imm, pc, dst, op);
+      step_opcode_mem_ld_imm(st, imm, dst64, pc, dst, op);
       return;
     case 1:
       src = get_src(ins);

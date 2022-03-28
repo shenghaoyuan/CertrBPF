@@ -326,16 +326,14 @@ Definition step : M unit :=
         upd_pc (Int.add pc ofs)
       else
         returnM tt
-    | BPF_LDDW d i =>
-      do len  <- eval_ins_len;
-        if (Int.ltu (Int.add pc Int.one) len) then (**r pc+1 < len: pc+1 is less than the length of l *)
-          do next_ins <- eval_ins (Int.add pc Int.one);
-          do next_imm <- get_immediate next_ins;
-          do _ <- upd_reg d (Val.orl (Val.longofint (sint32_to_vint i)) (Val.shll  (Val.longofint (sint32_to_vint next_imm)) (sint32_to_vint (Int.repr 32))));
-          do _ <- upd_pc_incr;
-            returnM tt
-        else
-          upd_flag BPF_ILLEGAL_LEN
+
+    | BPF_LDDW_low d i =>
+      do _   <- upd_reg d (Val.longofint (sint32_to_vint i));
+        returnM tt
+    | BPF_LDDW_high d i =>
+      do d64 <- eval_reg d;
+      do _   <- upd_reg d (Val.orl d64 (Val.shll  (Val.longofint (sint32_to_vint i)) (sint32_to_vint (Int.repr 32))));
+        returnM tt
     | BPF_LDX chunk d s ofs =>
       step_load_x_operation chunk d s ofs
     | BPF_ST chunk d s ofs =>

@@ -86,7 +86,8 @@ Definition get_instruction_alu32_reg (ins: int64) (rd rs: reg) (op: nat): instru
 
 Definition get_instruction_ld (ins: int64) (rd: reg) (i: int) (op: nat): instruction :=
   match Nat.land op 255 with
-  | 0x18 => BPF_LDDW rd i
+  | 0x18 => BPF_LDDW_low rd i
+  | 0x10 => BPF_LDDW_high rd i
   | _    => BPF_ERR
   end.
 

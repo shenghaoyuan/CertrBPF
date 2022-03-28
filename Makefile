@@ -39,8 +39,9 @@ all:
 	@$(MAKE) isolation
 	@$(MAKE) equivalence
 	@$(MAKE) verifier
+	@$(MAKE) dxverifier
 
-COQVERIFIER =  $(addprefix verifier/, comm/state.v comm/monad.v synthesismodel/opcode.v synthesismodel/verifier.v dxmodel/Dxopcode.v dxmodel/Dxstate.v dxmodel/Dxmonad.v dxmodel/Dxverifier.v dxmodel/verifier_dx.v dxmodel/verifier_TestMain.v dxmodel/verifier_ExtrMain.v)
+COQVERIFIER =  $(addprefix verifier/, comm/state.v comm/monad.v proofmodel/opcode.v proofmodel/verifier.v dxmodel/Dxopcode.v dxmodel/Dxstate.v dxmodel/Dxmonad.v dxmodel/Dxverifier.v dxmodel/verifier_dx.v dxmodel/verifier_TestMain.v dxmodel/verifier_ExtrMain.v)
 
 COQMODEL =  $(addprefix model/, Syntax.v Decode.v Semantics.v)
 
@@ -192,6 +193,8 @@ gitpush:
 	cp verifier/clightmodel/*.c $(GITDIR)/verifier/clightmodel
 	cp verifier/comm/*.v $(GITDIR)/verifier/comm
 	cp verifier/dxmodel/*.v $(GITDIR)/verifier/dxmodel
+	cp verifier/proofmodel/*.v $(GITDIR)/verifier/proofmodel
+	cp verifier/property/*.v $(GITDIR)/verifier/property
 	cp verifier/repatch/*.c $(GITDIR)/verifier/repatch
 	cp verifier/synthesismodel/*.v $(GITDIR)/verifier/synthesismodel
 
@@ -227,6 +230,8 @@ gitpull:
 	cp $(GITDIR)/verifier/clightmodel/*.c ./verifier/clightmodel
 	cp $(GITDIR)/verifier/comm/*.v ./verifier/comm
 	cp $(GITDIR)/verifier/dxmodel/*.v ./verifier/dxmodel
+	cp $(GITDIR)/verifier/proofmodel/*.v ./verifier/proofmodel
+	cp $(GITDIR)/verifier/property/*.v ./verifier/property
 	cp $(GITDIR)/verifier/repatch/*.c ./verifier/repatch
 	cp $(GITDIR)/verifier/synthesismodel/*.v ./verifier/synthesismodel
 

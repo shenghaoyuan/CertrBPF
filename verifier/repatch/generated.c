@@ -151,76 +151,77 @@ _Bool bpf_verifier_aux(unsigned int pc$48)
   _Bool b0$206;
   _Bool b$208;
   _Bool b$210;
-  _Bool b0$212;
-  _Bool b$214;
-  _Bool b0$216;
-  _Bool b$218;
-  _Bool b0$220;
-  _Bool b$222;
-  _Bool b0$224;
-  _Bool b$226;
+  _Bool b$212;
+  _Bool b0$214;
+  _Bool b$216;
+  _Bool b0$218;
+  _Bool b$220;
+  _Bool b0$222;
+  _Bool b$224;
+  _Bool b0$226;
   _Bool b$228;
   _Bool b$230;
   _Bool b$232;
   _Bool b$234;
-  _Bool b0$236;
-  _Bool b$238;
-  _Bool b0$240;
-  _Bool b$242;
-  _Bool b0$244;
-  _Bool b$246;
-  _Bool b0$248;
-  int ofs$250;
-  _Bool b$252;
-  int ofs$254;
-  _Bool b$256;
-  int ofs$258;
-  _Bool b$260;
-  int ofs$262;
-  _Bool b$264;
-  int ofs$266;
-  _Bool b$268;
-  int ofs$270;
-  _Bool b$272;
-  int ofs$274;
-  _Bool b$276;
-  int ofs$278;
-  _Bool b$280;
-  int ofs$282;
-  _Bool b$284;
-  int ofs$286;
-  _Bool b$288;
-  int ofs$290;
-  _Bool b$292;
-  int ofs$294;
-  _Bool b$296;
-  int ofs$298;
-  _Bool b$300;
-  int ofs$302;
-  _Bool b$304;
-  int ofs$306;
-  _Bool b$308;
-  int ofs$310;
-  _Bool b$312;
-  int ofs$314;
-  _Bool b$316;
-  int ofs$318;
-  _Bool b$320;
-  int ofs$322;
-  _Bool b$324;
-  int ofs$326;
-  _Bool b$328;
-  int ofs$330;
-  _Bool b$332;
-  int ofs$334;
-  _Bool b$336;
-  int ofs$338;
-  _Bool b$340;
+  _Bool b$236;
+  _Bool b0$238;
+  _Bool b$240;
+  _Bool b0$242;
+  _Bool b$244;
+  _Bool b0$246;
+  _Bool b$248;
+  _Bool b0$250;
+  int ofs$252;
+  _Bool b$254;
+  int ofs$256;
+  _Bool b$258;
+  int ofs$260;
+  _Bool b$262;
+  int ofs$264;
+  _Bool b$266;
+  int ofs$268;
+  _Bool b$270;
+  int ofs$272;
+  _Bool b$274;
+  int ofs$276;
+  _Bool b$278;
+  int ofs$280;
+  _Bool b$282;
+  int ofs$284;
+  _Bool b$286;
+  int ofs$288;
+  _Bool b$290;
+  int ofs$292;
+  _Bool b$294;
+  int ofs$296;
+  _Bool b$298;
+  int ofs$300;
+  _Bool b$302;
+  int ofs$304;
+  _Bool b$306;
+  int ofs$308;
+  _Bool b$310;
+  int ofs$312;
+  _Bool b$314;
+  int ofs$316;
+  _Bool b$318;
+  int ofs$320;
+  _Bool b$322;
+  int ofs$324;
+  _Bool b$326;
+  int ofs$328;
+  _Bool b$330;
+  int ofs$332;
+  _Bool b$334;
+  int ofs$336;
+  _Bool b$338;
+  int ofs$340;
+  _Bool b$342;
   len$50 = eval_ins_len();
   ins64 = eval_ins(pc$48 - 1U - len$50);
   op = get_opcode(ins64);
   if (pc$48 == 0U) {
-    return op == 149;
+    return ins64 == 149LLU;
   } else {
     n$56 = pc$48 - 1U;
     opc = nat2opcode(op);
@@ -696,17 +697,24 @@ _Bool bpf_verifier_aux(unsigned int pc$48)
           return 0;
         }
       case 24:
-        b$208 = is_well_jump(pc$48, len$50, 2);
+        b$208 = is_well_dst(ins64);
         if (b$208) {
-          return bpf_verifier_aux(n$56 - 1);
+          return bpf_verifier_aux(n$56);
+        } else {
+          return 0;
+        }
+      case 16:
+        b$210 = is_well_dst(ins64);
+        if (b$210) {
+          return bpf_verifier_aux(n$56);
         } else {
           return 0;
         }
       case 97:
-        b$210 = is_well_dst(ins64);
-        if (b$210) {
-          b0$212 = is_well_src(ins64);
-          if (b0$212) {
+        b$212 = is_well_dst(ins64);
+        if (b$212) {
+          b0$214 = is_well_src(ins64);
+          if (b0$214) {
             return bpf_verifier_aux(n$56);
           } else {
             return 0;
@@ -715,10 +723,10 @@ _Bool bpf_verifier_aux(unsigned int pc$48)
           return 0;
         }
       case 105:
-        b$214 = is_well_dst(ins64);
-        if (b$214) {
-          b0$216 = is_well_src(ins64);
-          if (b0$216) {
+        b$216 = is_well_dst(ins64);
+        if (b$216) {
+          b0$218 = is_well_src(ins64);
+          if (b0$218) {
             return bpf_verifier_aux(n$56);
           } else {
             return 0;
@@ -727,10 +735,10 @@ _Bool bpf_verifier_aux(unsigned int pc$48)
           return 0;
         }
       case 113:
-        b$218 = is_well_dst(ins64);
-        if (b$218) {
-          b0$220 = is_well_src(ins64);
-          if (b0$220) {
+        b$220 = is_well_dst(ins64);
+        if (b$220) {
+          b0$222 = is_well_src(ins64);
+          if (b0$222) {
             return bpf_verifier_aux(n$56);
           } else {
             return 0;
@@ -739,10 +747,10 @@ _Bool bpf_verifier_aux(unsigned int pc$48)
           return 0;
         }
       case 121:
-        b$222 = is_well_dst(ins64);
-        if (b$222) {
-          b0$224 = is_well_src(ins64);
-          if (b0$224) {
+        b$224 = is_well_dst(ins64);
+        if (b$224) {
+          b0$226 = is_well_src(ins64);
+          if (b0$226) {
             return bpf_verifier_aux(n$56);
           } else {
             return 0;
@@ -751,38 +759,38 @@ _Bool bpf_verifier_aux(unsigned int pc$48)
           return 0;
         }
       case 98:
-        b$226 = is_well_dst(ins64);
-        if (b$226) {
-          return bpf_verifier_aux(n$56);
-        } else {
-          return 0;
-        }
-      case 106:
         b$228 = is_well_dst(ins64);
         if (b$228) {
           return bpf_verifier_aux(n$56);
         } else {
           return 0;
         }
-      case 114:
+      case 106:
         b$230 = is_well_dst(ins64);
         if (b$230) {
           return bpf_verifier_aux(n$56);
         } else {
           return 0;
         }
-      case 122:
+      case 114:
         b$232 = is_well_dst(ins64);
         if (b$232) {
           return bpf_verifier_aux(n$56);
         } else {
           return 0;
         }
-      case 99:
+      case 122:
         b$234 = is_well_dst(ins64);
         if (b$234) {
-          b0$236 = is_well_src(ins64);
-          if (b0$236) {
+          return bpf_verifier_aux(n$56);
+        } else {
+          return 0;
+        }
+      case 99:
+        b$236 = is_well_dst(ins64);
+        if (b$236) {
+          b0$238 = is_well_src(ins64);
+          if (b0$238) {
             return bpf_verifier_aux(n$56);
           } else {
             return 0;
@@ -791,10 +799,10 @@ _Bool bpf_verifier_aux(unsigned int pc$48)
           return 0;
         }
       case 107:
-        b$238 = is_well_dst(ins64);
-        if (b$238) {
-          b0$240 = is_well_src(ins64);
-          if (b0$240) {
+        b$240 = is_well_dst(ins64);
+        if (b$240) {
+          b0$242 = is_well_src(ins64);
+          if (b0$242) {
             return bpf_verifier_aux(n$56);
           } else {
             return 0;
@@ -803,10 +811,10 @@ _Bool bpf_verifier_aux(unsigned int pc$48)
           return 0;
         }
       case 115:
-        b$242 = is_well_dst(ins64);
-        if (b$242) {
-          b0$244 = is_well_src(ins64);
-          if (b0$244) {
+        b$244 = is_well_dst(ins64);
+        if (b$244) {
+          b0$246 = is_well_src(ins64);
+          if (b0$246) {
             return bpf_verifier_aux(n$56);
           } else {
             return 0;
@@ -815,10 +823,10 @@ _Bool bpf_verifier_aux(unsigned int pc$48)
           return 0;
         }
       case 123:
-        b$246 = is_well_dst(ins64);
-        if (b$246) {
-          b0$248 = is_well_src(ins64);
-          if (b0$248) {
+        b$248 = is_well_dst(ins64);
+        if (b$248) {
+          b0$250 = is_well_src(ins64);
+          if (b0$250) {
             return bpf_verifier_aux(n$56);
           } else {
             return 0;
@@ -827,185 +835,185 @@ _Bool bpf_verifier_aux(unsigned int pc$48)
           return 0;
         }
       case 5:
-        ofs$250 = get_offset(ins64);
-        b$252 = is_well_jump(pc$48, len$50, ofs$250);
-        if (b$252) {
+        ofs$252 = get_offset(ins64);
+        b$254 = is_well_jump(pc$48, len$50, ofs$252);
+        if (b$254) {
           return bpf_verifier_aux(n$56);
         } else {
           return 0;
         }
       case 21:
-        ofs$254 = get_offset(ins64);
-        b$256 = is_well_jump(pc$48, len$50, ofs$254);
-        if (b$256) {
+        ofs$256 = get_offset(ins64);
+        b$258 = is_well_jump(pc$48, len$50, ofs$256);
+        if (b$258) {
           return bpf_verifier_aux(n$56);
         } else {
           return 0;
         }
       case 37:
-        ofs$258 = get_offset(ins64);
-        b$260 = is_well_jump(pc$48, len$50, ofs$258);
-        if (b$260) {
+        ofs$260 = get_offset(ins64);
+        b$262 = is_well_jump(pc$48, len$50, ofs$260);
+        if (b$262) {
           return bpf_verifier_aux(n$56);
         } else {
           return 0;
         }
       case 53:
-        ofs$262 = get_offset(ins64);
-        b$264 = is_well_jump(pc$48, len$50, ofs$262);
-        if (b$264) {
+        ofs$264 = get_offset(ins64);
+        b$266 = is_well_jump(pc$48, len$50, ofs$264);
+        if (b$266) {
           return bpf_verifier_aux(n$56);
         } else {
           return 0;
         }
       case 165:
-        ofs$266 = get_offset(ins64);
-        b$268 = is_well_jump(pc$48, len$50, ofs$266);
-        if (b$268) {
+        ofs$268 = get_offset(ins64);
+        b$270 = is_well_jump(pc$48, len$50, ofs$268);
+        if (b$270) {
           return bpf_verifier_aux(n$56);
         } else {
           return 0;
         }
       case 181:
-        ofs$270 = get_offset(ins64);
-        b$272 = is_well_jump(pc$48, len$50, ofs$270);
-        if (b$272) {
+        ofs$272 = get_offset(ins64);
+        b$274 = is_well_jump(pc$48, len$50, ofs$272);
+        if (b$274) {
           return bpf_verifier_aux(n$56);
         } else {
           return 0;
         }
       case 69:
-        ofs$274 = get_offset(ins64);
-        b$276 = is_well_jump(pc$48, len$50, ofs$274);
-        if (b$276) {
+        ofs$276 = get_offset(ins64);
+        b$278 = is_well_jump(pc$48, len$50, ofs$276);
+        if (b$278) {
           return bpf_verifier_aux(n$56);
         } else {
           return 0;
         }
       case 85:
-        ofs$278 = get_offset(ins64);
-        b$280 = is_well_jump(pc$48, len$50, ofs$278);
-        if (b$280) {
+        ofs$280 = get_offset(ins64);
+        b$282 = is_well_jump(pc$48, len$50, ofs$280);
+        if (b$282) {
           return bpf_verifier_aux(n$56);
         } else {
           return 0;
         }
       case 101:
-        ofs$282 = get_offset(ins64);
-        b$284 = is_well_jump(pc$48, len$50, ofs$282);
-        if (b$284) {
+        ofs$284 = get_offset(ins64);
+        b$286 = is_well_jump(pc$48, len$50, ofs$284);
+        if (b$286) {
           return bpf_verifier_aux(n$56);
         } else {
           return 0;
         }
       case 117:
-        ofs$286 = get_offset(ins64);
-        b$288 = is_well_jump(pc$48, len$50, ofs$286);
-        if (b$288) {
+        ofs$288 = get_offset(ins64);
+        b$290 = is_well_jump(pc$48, len$50, ofs$288);
+        if (b$290) {
           return bpf_verifier_aux(n$56);
         } else {
           return 0;
         }
       case 197:
-        ofs$290 = get_offset(ins64);
-        b$292 = is_well_jump(pc$48, len$50, ofs$290);
-        if (b$292) {
+        ofs$292 = get_offset(ins64);
+        b$294 = is_well_jump(pc$48, len$50, ofs$292);
+        if (b$294) {
           return bpf_verifier_aux(n$56);
         } else {
           return 0;
         }
       case 213:
-        ofs$294 = get_offset(ins64);
-        b$296 = is_well_jump(pc$48, len$50, ofs$294);
-        if (b$296) {
+        ofs$296 = get_offset(ins64);
+        b$298 = is_well_jump(pc$48, len$50, ofs$296);
+        if (b$298) {
           return bpf_verifier_aux(n$56);
         } else {
           return 0;
         }
       case 29:
-        ofs$298 = get_offset(ins64);
-        b$300 = is_well_jump(pc$48, len$50, ofs$298);
-        if (b$300) {
+        ofs$300 = get_offset(ins64);
+        b$302 = is_well_jump(pc$48, len$50, ofs$300);
+        if (b$302) {
           return bpf_verifier_aux(n$56);
         } else {
           return 0;
         }
       case 45:
-        ofs$302 = get_offset(ins64);
-        b$304 = is_well_jump(pc$48, len$50, ofs$302);
-        if (b$304) {
+        ofs$304 = get_offset(ins64);
+        b$306 = is_well_jump(pc$48, len$50, ofs$304);
+        if (b$306) {
           return bpf_verifier_aux(n$56);
         } else {
           return 0;
         }
       case 61:
-        ofs$306 = get_offset(ins64);
-        b$308 = is_well_jump(pc$48, len$50, ofs$306);
-        if (b$308) {
+        ofs$308 = get_offset(ins64);
+        b$310 = is_well_jump(pc$48, len$50, ofs$308);
+        if (b$310) {
           return bpf_verifier_aux(n$56);
         } else {
           return 0;
         }
       case 173:
-        ofs$310 = get_offset(ins64);
-        b$312 = is_well_jump(pc$48, len$50, ofs$310);
-        if (b$312) {
+        ofs$312 = get_offset(ins64);
+        b$314 = is_well_jump(pc$48, len$50, ofs$312);
+        if (b$314) {
           return bpf_verifier_aux(n$56);
         } else {
           return 0;
         }
       case 189:
-        ofs$314 = get_offset(ins64);
-        b$316 = is_well_jump(pc$48, len$50, ofs$314);
-        if (b$316) {
+        ofs$316 = get_offset(ins64);
+        b$318 = is_well_jump(pc$48, len$50, ofs$316);
+        if (b$318) {
           return bpf_verifier_aux(n$56);
         } else {
           return 0;
         }
       case 77:
-        ofs$318 = get_offset(ins64);
-        b$320 = is_well_jump(pc$48, len$50, ofs$318);
-        if (b$320) {
+        ofs$320 = get_offset(ins64);
+        b$322 = is_well_jump(pc$48, len$50, ofs$320);
+        if (b$322) {
           return bpf_verifier_aux(n$56);
         } else {
           return 0;
         }
       case 93:
-        ofs$322 = get_offset(ins64);
-        b$324 = is_well_jump(pc$48, len$50, ofs$322);
-        if (b$324) {
+        ofs$324 = get_offset(ins64);
+        b$326 = is_well_jump(pc$48, len$50, ofs$324);
+        if (b$326) {
           return bpf_verifier_aux(n$56);
         } else {
           return 0;
         }
       case 109:
-        ofs$326 = get_offset(ins64);
-        b$328 = is_well_jump(pc$48, len$50, ofs$326);
-        if (b$328) {
+        ofs$328 = get_offset(ins64);
+        b$330 = is_well_jump(pc$48, len$50, ofs$328);
+        if (b$330) {
           return bpf_verifier_aux(n$56);
         } else {
           return 0;
         }
       case 125:
-        ofs$330 = get_offset(ins64);
-        b$332 = is_well_jump(pc$48, len$50, ofs$330);
-        if (b$332) {
+        ofs$332 = get_offset(ins64);
+        b$334 = is_well_jump(pc$48, len$50, ofs$332);
+        if (b$334) {
           return bpf_verifier_aux(n$56);
         } else {
           return 0;
         }
       case 205:
-        ofs$334 = get_offset(ins64);
-        b$336 = is_well_jump(pc$48, len$50, ofs$334);
-        if (b$336) {
+        ofs$336 = get_offset(ins64);
+        b$338 = is_well_jump(pc$48, len$50, ofs$336);
+        if (b$338) {
           return bpf_verifier_aux(n$56);
         } else {
           return 0;
         }
       case 221:
-        ofs$338 = get_offset(ins64);
-        b$340 = is_well_jump(pc$48, len$50, ofs$338);
-        if (b$340) {
+        ofs$340 = get_offset(ins64);
+        b$342 = is_well_jump(pc$48, len$50, ofs$340);
+        if (b$342) {
           return bpf_verifier_aux(n$56);
         } else {
           return 0;
@@ -1023,11 +1031,11 @@ _Bool bpf_verifier_aux(unsigned int pc$48)
 
 _Bool bpf_verifier(void)
 {
-  unsigned int len$342;
-  len$342 = eval_ins_len();
-  if (1U <= len$342) {
-    if (len$342 <= 4294967295U / 8) {
-      return bpf_verifier_aux(len$342 - 1);
+  unsigned int len$344;
+  len$344 = eval_ins_len();
+  if (1U <= len$344) {
+    if (len$344 <= 4294967295U / 8) {
+      return bpf_verifier_aux(len$344 - 1);
     } else {
       return 0;
     }

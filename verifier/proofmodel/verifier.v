@@ -3,7 +3,7 @@ From Coq Require Import ZArith.
 
 From bpf.comm Require Import BinrBPF.
 From bpf.verifier.comm Require Import state monad.
-From bpf.verifier.synthesismodel Require Import opcode.
+From bpf.verifier.proofmodel Require Import opcode.
 
 Open Scope nat_scope.
 Open Scope monad_scope.
@@ -27,12 +27,13 @@ Fixpoint bpf_verifier_aux (pc: nat): M bool := (**r pc: len-1, len-2, ... 0 *)
   do ins64<- eval_ins (Int.repr (Z.of_nat (len - 1 - pc))); (**r len-pc: 0, 1, 2, etc... len -1 *)
   do op   <- get_opcode ins64;
     match pc with
-    | O => returnM (Nat.eqb op 0x95)
+    | O => returnM (Int64.eq ins64 (Int64.repr 0x95))
     | S n =>
       match nat2opcode op with
       (**r ALU_IMM *)
       | ADD64_IMM | SUB64_IMM | MUL64_IMM | OR64_IMM | AND64_IMM | NEG64 | XOR64_IMM | MOV64_IMM
       | ADD32_IMM | SUB32_IMM | MUL32_IMM | OR32_IMM | AND32_IMM | NEG32 | XOR32_IMM | MOV32_IMM
+      | LDDW_LOW | LDDW_HIGH
       | STW | STH | STB | STDW =>
         do b <- is_well_dst ins64;
           if b then
@@ -60,14 +61,6 @@ Fixpoint bpf_verifier_aux (pc: nat): M bool := (**r pc: len-1, len-2, ... 0 *)
             bpf_verifier_aux n
           else
             returnM false
-      (**r LDDW *)
-      | LDDW =>
-        (**r avoid lddw imm; imm; null: pc + 2 >= len *)
-        do b   <- is_well_jump pc len (Int.repr 2%Z);
-          if b then
-            bpf_verifier_aux (n-1)
-          else
-            returnM false
       (**r we don't need to check pc + 1, check the len-1 is exit is enough *)
       (**r JMP *)
       | JA | JEQ_IMM | JGT_IMM | JGE_IMM | JLT_IMM | JLE_IMM | JSET_IMM
@@ -77,7 +70,7 @@ Fixpoint bpf_verifier_aux (pc: nat): M bool := (**r pc: len-1, len-2, ... 0 *)
         do ofs <- get_offset ins64;
         do b   <- is_well_jump pc len ofs;
           if b then
-            bpf_verifier_aux (n-1)
+            bpf_verifier_aux n
           else
             returnM false
       | ADD64_REG | SUB64_REG | MUL64_REG | DIV64_REG | OR64_REG | AND64_REG | LSH64_REG
@@ -95,7 +88,7 @@ Fixpoint bpf_verifier_aux (pc: nat): M bool := (**r pc: len-1, len-2, ... 0 *)
           else
             returnM false
 
-      | CALL | EXIT => bpf_verifier_aux (n-1)
+      | CALL | EXIT => bpf_verifier_aux n
 
       | ILLGEL => returnM false
       end

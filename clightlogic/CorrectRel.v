@@ -145,8 +145,13 @@ Definition opcode_branch_correct (opcode: opcode_branch) (v: val) :=
 
 Definition opcode_mem_ld_imm_correct (opcode: opcode_mem_ld_imm) (v: val) :=
   match opcode with
-  | op_BPF_LDDW => v = Vint (Int.repr (Z.of_nat 0x18))
-  | op_BPF_LDX_IMM_ILLEGAL_INS => exists i, v = Vint (Int.repr (Z.of_nat i)) /\ i <> 0x18 /\ i <= 255
+  | op_BPF_LDDW_low  => v = Vint (Int.repr (Z.of_nat 0x18))
+  | op_BPF_LDDW_high => v = Vint (Int.repr (Z.of_nat 0x10))
+  | op_BPF_LDX_IMM_ILLEGAL_INS =>
+    exists i,
+      v = Vint (Int.repr (Z.of_nat i)) /\
+      (i <> 0x18 /\ i <> 0x10) /\
+      i <= 255
   end.
 
 Definition opcode_mem_ld_reg_correct (opcode: opcode_mem_ld_reg) (v: val) :=
@@ -218,22 +223,6 @@ Definition mrs_correct (S: special_blocks) (mrs: list memory_region) (v: val) (s
   mrs = (bpf_mrs st) /\
   match_regions st_blk mrs_blk ins_blk st m /\
   match_state  st m.
-
- (*
-Definition mrs_correct (x: nat) (v: val) (st: State.state) (m:Memory.Mem.mem) :=
-  Vint (Int.repr (Z.of_nat x)) = v. /\  0 <= Z.of_nat x <= Z.of_nat (mrs_num st).
-
-Definition mrs_correct1 (x: nat) (v: val) (st: State.state) (m:Memory.Mem.mem) :=
-  Vint (Int.repr (Z.of_nat x)) = v /\  0 <= Z.of_nat x < Z.of_nat (mrs_num st) /\
-  16 * (Z.of_nat(mrs_num st)) <= Ptrofs.max_unsigned.*)
-(*
-Definition ins_pc_correct (x: int) (v: val) (st: State.state) (m:Memory.Mem.mem) :=
-  Vint x = v /\
-  0 <= Int.signed x < Z.of_nat (ins_len st).
-
-
-Definition len_correct (len: nat) (x: int) (v: val) :=
-  Vint x = v /\  Int.signed x = Z.of_nat len. *)
 
 Definition match_chunk (x : memory_chunk) (b: val) :=
   b = memory_chunk_to_valu32 x.

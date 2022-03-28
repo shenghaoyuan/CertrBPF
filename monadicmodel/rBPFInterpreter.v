@@ -331,21 +331,16 @@ Definition step_opcode_branch (dst64: val) (src64: val) (pc: int) (ofs: int) (op
       do _ <- upd_flag BPF_ILLEGAL_INSTRUCTION; returnM tt
   end.
 
-Definition step_opcode_mem_ld_imm (imm: int) (pc: int) (dst: reg) (op: nat): M unit :=
-  do len  <- eval_ins_len;
+Definition step_opcode_mem_ld_imm (imm: int) (dst64: val) (pc: int) (dst: reg) (op: nat): M unit :=
   do opcode_ld <- get_opcode_mem_ld_imm op;
   match opcode_ld with
-  | op_BPF_LDDW      =>
-    if (Int.ltu (Int.add pc Int.one) len) then (**r pc+1 < len: pc+1 is less than the length of l *)
-      do next_ins <- eval_ins (Int.add pc Int.one);
-      do next_imm <- get_immediate next_ins;
-      do _ <- upd_reg dst (Val.orl (Val.longofint (sint32_to_vint imm)) (Val.shll  (Val.longofint (sint32_to_vint next_imm)) (sint32_to_vint (Int.repr 32))));
-      do _ <- upd_pc_incr; returnM tt
-    else
-      upd_flag BPF_ILLEGAL_LEN
+  | op_BPF_LDDW_low      =>
+    do _ <- upd_reg dst (Val.longofint (sint32_to_vint imm)); returnM tt
+  | op_BPF_LDDW_high     =>
+    do _ <- upd_reg dst (Val.orl dst64 (Val.shll  (Val.longofint (sint32_to_vint imm)) (sint32_to_vint (Int.repr 32))));
+      returnM tt
   | op_BPF_LDX_IMM_ILLEGAL_INS => upd_flag BPF_ILLEGAL_INSTRUCTION
   end.
-
 
 Definition step_opcode_mem_ld_reg (addr: val) (pc: int) (dst: reg) (op: nat): M unit :=
   do opcode_ld <- get_opcode_mem_ld_reg op;
@@ -478,8 +473,9 @@ Definition step: M unit :=
     do src64  <- get_src64 op ins;
       step_opcode_branch dst64 src64 pc ofs op                    (**r 0xX5 / 0xXd *)
   | op_BPF_Mem_ld_imm  =>
+    do dst64  <- eval_reg dst;
     do imm    <- get_immediate ins;
-    step_opcode_mem_ld_imm imm pc dst op              (**r 0xX8 *)
+    step_opcode_mem_ld_imm imm dst64 pc dst op              (**r 0xX8 *)
   | op_BPF_Mem_ld_reg  =>
     do src    <- get_src ins;
     do src64  <- eval_reg src;

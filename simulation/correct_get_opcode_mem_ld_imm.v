@@ -70,21 +70,30 @@ Section Get_opcode_mem_ld_imm.
     -
       unfold eval_inv, match_res, opcode_mem_ld_imm_correct.
       rewrite Nat_land_0xff; auto.
-      destruct (c =? 24) eqn: Hc_eq;
-      [rewrite Nat.eqb_eq in Hc_eq | rewrite Nat.eqb_neq in Hc_eq].
-      + subst.
-        reflexivity.
-      + assert (Hswitch:
+      destruct (c =? 24) eqn: Hc_eq0;
+      [rewrite Nat.eqb_eq in Hc_eq0 | rewrite Nat.eqb_neq in Hc_eq0].
+      subst.
+      reflexivity.
+
+      destruct (c =? 16) eqn: Hc_eq1;
+      [rewrite Nat.eqb_eq in Hc_eq1 | rewrite Nat.eqb_neq in Hc_eq1].
+      subst.
+      reflexivity.
+
+      assert (Hswitch:
           match c with
-          | 24 => op_BPF_LDDW
+          | 16 => op_BPF_LDDW_high
+          | 24 => op_BPF_LDDW_low
           | _ => op_BPF_LDX_IMM_ILLEGAL_INS
           end = op_BPF_LDX_IMM_ILLEGAL_INS). {
-          do 24 (destruct c; [reflexivity |]).
-          destruct c; [exfalso; apply Hc_eq; reflexivity | reflexivity ].
+          do 16 (destruct c; [reflexivity |]).
+          destruct c; [exfalso; apply Hc_eq1; reflexivity | ].
+          do 7 (destruct c; [reflexivity |]).
+          destruct c; [exfalso; apply Hc_eq0; reflexivity | reflexivity ].
         }
         rewrite Hswitch; clear Hswitch.
         exists c.
-        split; [ | split; assumption].
+        split; [ | split; [split |]; assumption].
         unfold Int.and.
         change (Int.unsigned (Int.repr 255)) with (Z.of_nat (Z.to_nat 255%Z)).
         rewrite Int.unsigned_repr; [| change Int.max_unsigned with 4294967295%Z; lia].

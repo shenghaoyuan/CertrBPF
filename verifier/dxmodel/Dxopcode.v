@@ -6,7 +6,7 @@ From compcert Require Import Integers.
 From dx Require Import ResultMonad IR.
 
 From bpf.comm Require Import InfComp GenMatchable CoqIntegers.
-From bpf.verifier.synthesismodel Require Import opcode.
+From bpf.verifier.proofmodel Require Import opcode.
 From bpf.dxmodel Require Import DxNat.
 
 (******************** Dx related *******************)
@@ -76,7 +76,8 @@ Definition opcodeCompilableTypeMatchableType : MatchableType:=
        :: (ARSH32_REG,0xcc)
 
 
-       :: (LDDW,0x18)
+       :: (LDDW_LOW, 0x18)
+       :: (LDDW_HIGH,0x10)
        :: (LDXW,0x61)
        :: (LDXH,0x69)
        :: (LDXB,0x71)
