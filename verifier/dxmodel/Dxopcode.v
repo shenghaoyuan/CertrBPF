@@ -5,9 +5,8 @@ From compcert Require Import Integers.
 
 From dx Require Import ResultMonad IR.
 
-From bpf.comm Require Import InfComp GenMatchable CoqIntegers.
+From bpf.dxcomm Require Import InfComp GenMatchable CoqIntegers DxNat.
 From bpf.verifier.proofmodel Require Import opcode.
-From bpf.dxmodel Require Import DxNat.
 
 (******************** Dx related *******************)
 

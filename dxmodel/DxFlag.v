@@ -4,8 +4,8 @@ Import ListNotations.
 From dx Require Import ResultMonad IR.
 From dx.Type Require Import Bool.
 
-From bpf.comm Require Import Flag CoqIntegers.
-From bpf.dxmodel Require Import DxIntegers.
+From bpf.comm Require Import Flag.
+From bpf.dxcomm Require Import CoqIntegers DxIntegers.
 
 (*
 Inductive bpf_flag: Type := 

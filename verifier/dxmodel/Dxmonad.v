@@ -1,4 +1,4 @@
-From bpf.dxmodel Require Import DxIntegers.
+From bpf.dxcomm Require Import DxIntegers.
 From bpf.verifier.comm Require Import monad.
 
 Definition M (A: Type) := monad.M A.

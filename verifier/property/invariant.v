@@ -26,7 +26,7 @@ Definition verifier_inv (st: state): Prop :=
 
 *)
 
-Lemma verifier_imply:
+Lemma verifier_imply_well_list_range:
   forall st,
     (ins_len st) = (List.length (ins st)) ->
     bpf_verifier st = Some (true, st) ->
@@ -54,7 +54,6 @@ Proof.
   change (4294967295 / 8 * 8) with 4294967288 in Hle.
   split.
   lia.
-  unfold BinrBPF.get_opcode, List64.MyListIndexs32, List64.MyList.index_s32.
   assert (Hbpf0: bpf_verifier_aux 0 st = Some (true, st)). {
     clear - H0.
     revert H0.
@@ -67,7 +66,9 @@ Proof.
     simpl in H0.
     unfold eval_ins_len, eval_ins, get_opcode,
     is_shift_range, is_not_div_by_zero, is_well_jump,
-    is_well_dst, is_well_src, get_offset, bindM, returnM in H0.
+    is_well_dst, is_well_src, get_offset, bpf_verifier_aux2,
+    is_shift_range, is_not_div_by_zero,
+    is_well_dst, is_well_src, get_offset, is_well_jump, bindM, returnM in H0.
     destruct nat2opcode eqn: Hop; try
     match goal with
     | H: (if ?X then _ else _) _ = Some _ |- _ =>
@@ -75,16 +76,16 @@ Proof.
     end.
     all: try
     match goal with
-    | H: (if ?X then _ else _) _ = Some _ |- _ =>
+    | H: match (if ?X then _ else _) _ with _ => _ end = Some _ |- _ =>
       destruct X eqn: Hif1; [ try assumption | inversion H]
+    end.
+    all: try
+    match goal with
+    | H: (if ?X then _ else _) _ = Some _ |- _ =>
+      destruct X eqn: Hif0; [ try assumption | inversion H]
     end.
     all: try assumption.
     all: try inversion H0.
-    match goal with
-    | H: (if ?X then _ else _) _ = Some _ |- _ =>
-      destruct X; [ assumption | inversion H]
-    end.
-    admit.
   }
   simpl in Hbpf0.
   unfold eval_ins_len, eval_ins, get_opcode, bindM, returnM in Hbpf0.
@@ -102,5 +103,70 @@ Proof.
   change Int.max_unsigned with 4294967295.
   lia.
 Qed.
+(*
+Lemma 
+H0 : bpf_verifier_aux (ins_len st - 1) st = Some (true, st)
+i : nat
+H1 : (i < length (ins st))%nat
+
+*)
+
+Lemma verifier_imply_inv':
+  forall st,
+    (ins_len st) = (List.length (ins st)) ->
+    bpf_verifier st = Some (true, st) ->
+      verifier_inv' (ins st).
+Proof.
+  unfold bpf_verifier, verifier_inv', eval_ins_len, state.eval_ins_len.
+  unfold bindM, returnM.
+  intros.
+  split.
+  apply verifier_imply_well_list_range; auto.
+  intros.
+  rewrite <- H.
+  match goal with
+  | H: (if ?X then _ else _) _ = Some _ |- _ =>
+    destruct X eqn: Hle_low; [ rewrite Nat.leb_le in Hle_low| inversion H]
+  end.
+  match goal with
+  | H: (if ?X then _ else _) _ = Some _ |- _ =>
+    destruct X eqn: Hle_high; [ rewrite Nat.leb_le in Hle_high| inversion H]
+  end.
+  assert (Hbpfi: bpf_verifier_aux (ins_len st - 1 - i) st = Some (true, st)). {
+    rewrite <- H in H1.
+    assert (Hle: (ins_len st - 1 - i >= 0)%nat) by lia.
+    clear - H0 Hle.
+    revert H0 Hle.
+    generalize (ins_len st - 1)%nat.
+    intros.
+    induction n.
+    rewrite Nat.sub_0_l.
+    assumption.
+    admit.
+  }
+
+  destruct (ins_len st - 1 - i)%nat eqn: Hpc.
+  simpl in Hbpfi. admit.
+  simpl in Hbpfi.
+  rewrite <- Hpc in Hbpfi.
+  unfold eval_ins_len, eval_ins, get_opcode, state.eval_ins_len, state.eval_ins, bindM, returnM in Hbpfi.
+  assert (Hsub_same: (forall a b, a >= b -> a - (a - b) = b)%nat). {
+    clear.
+    intros.
+    induction a.
+    simpl.
+    lia.
+    simpl.
+    destruct b.
+    rewrite Nat.sub_diag.
+    reflexivity.
+    Search (--_)%nat.
+  } ...
+
+  assert (Hnthi: bpf_verifier_aux2 i (ins_len st) op ins64 st = Some (true, st)).
+  unfold bpf_verifier_aux in Hbpfi.
+  simpl in Hbpfi.
+Qed.
+
 
 Close Scope Z_scope.

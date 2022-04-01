@@ -5,8 +5,7 @@ From compcert Require Import Integers.
 
 From dx Require Import ResultMonad IR.
 
-From bpf.comm Require Import InfComp GenMatchable CoqIntegers.
-From bpf.dxmodel Require Import DxIntegers DxNat.
+From bpf.dxcomm Require Import InfComp GenMatchable CoqIntegers DxIntegers DxNat.
 
 From bpf.monadicmodel Require Import Opcode.
 

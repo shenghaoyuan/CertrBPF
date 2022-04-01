@@ -1,4 +1,5 @@
 From compcert Require Import Ctypes AST Integers.
+From Coq Require Import ZArith.
 
 From bpf.comm Require Import Regs rBPFAST.
 
@@ -28,6 +29,12 @@ Lemma arch_eqb_false:
 Proof.
   destruct x, y; simpl; intuition congruence.
 Qed.
+
+Definition arch2Z (a: arch) : Z :=
+  match a with
+  | A32 => 32%Z
+  | A64 => 64%Z
+  end.
 
 (** For condition flags *)
 (*Inductive signedness := Signed | Unsigned.*)

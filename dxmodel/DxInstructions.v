@@ -6,7 +6,8 @@ From compcert Require Import Integers Values AST Memory.
 From dx.Type Require Import Bool Nat.
 
 From bpf.comm Require Import MemRegion rBPFValues rBPFAST rBPFMemType Flag Regs BinrBPF.
-From bpf.dxmodel Require Import DxIntegers DxList64 DxRegs DxValues DxOpcode DxFlag DxMemRegion DxMemType DxMonad DxNat.
+From bpf.dxcomm Require Import DxIntegers DxValues DxList64 DxNat.
+From bpf.dxmodel Require Import DxRegs DxOpcode DxFlag DxMemRegion DxMemType DxMonad.
 
 From bpf.monadicmodel Require Import Opcode.
 

@@ -1,7 +1,7 @@
 From dx Require Import ResultMonad IR.
 From dx.Type Require Import Nat.
-From bpf.comm Require Import BinrBPF CoqIntegers.
-From bpf.dxmodel Require Import DxIntegers.
+From bpf.comm Require Import BinrBPF.
+From bpf.dxcomm Require Import CoqIntegers DxIntegers.
 From Coq Require Import List ZArith.
 Import ListNotations.
 

@@ -1,7 +1,8 @@
 From compcert Require Import AST Integers Memory.
 
 From bpf.comm Require Import Monad Flag Regs MemRegion.
-From bpf.dxmodel Require Import DxIntegers DxValues DxRegs DxFlag DxMemRegion DxState.
+From bpf.dxcomm Require Import DxIntegers DxValues.
+From bpf.dxmodel Require Import DxRegs DxFlag DxMemRegion DxState.
 
 (*
 Definition stateM := state. (*This one must be int_64 defined in DxIntegers *)

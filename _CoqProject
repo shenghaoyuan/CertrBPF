@@ -1,5 +1,6 @@
 INSTALLDEFAULTROOT = comm
 -R comm bpf.comm
+-R dxcomm bpf.dxcomm
 -R model bpf.model
 -R equivalence bpf.equivalence
 -R monadicmodel bpf.monadicmodel

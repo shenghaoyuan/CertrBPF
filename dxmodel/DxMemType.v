@@ -7,8 +7,8 @@ From compcert Require Import Integers Values Memtype Memory.
 From dx Require Import ResultMonad IR.
 From dx.Type Require Import Bool Nat.
 
-From bpf.comm Require Import rBPFMemType GenMatchable CoqIntegers.
-From bpf.dxmodel Require Import DxIntegers DxValues.
+From bpf.comm Require Import rBPFMemType.
+From bpf.dxcomm Require Import GenMatchable CoqIntegers DxIntegers DxValues.
 
 Open Scope Z_scope.
 

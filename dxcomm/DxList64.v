@@ -8,28 +8,8 @@ From compcert.lib Require Integers.
 From dx Require Import ResultMonad IR.
 From dx.Type Require Import Nat.
 
-From bpf.comm Require Import List64 CoqIntegers.
-From bpf.dxmodel Require Import DxIntegers.
-
-(*
-Module MyList.
-
-  Definition t := list int64_t.
-  Definition index_s32 (l: t) (idx: sint32_t): int64_t := 
-    List.nth (Z.to_nat (Integers.Int.signed idx)) l (Integers.Int64.zero).
-  Definition index_nat (l: t) (idx: nat): int64_t := 
-    List.nth idx l (Integers.Int64.zero).
-
-End MyList.
-
-(** length of MyList should be a extern variable? *)
-
-Definition MyListType := MyList.t.
-Definition MyListIndexs32 := MyList.index_s32.
-Definition MyListIndexnat := MyList.index_nat.
-
-Definition default_list: MyListType :=  [].
-*)
+From bpf.comm Require Import List64.
+From bpf.dxcomm Require Import CoqIntegers DxIntegers.
 
 (******************** Dx Related *******************)
 

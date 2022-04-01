@@ -23,8 +23,7 @@ From compcert Require Import Integers Values.
 From dx Require Import ResultMonad IR.
 From dx.Type Require Import Bool.
 
-From bpf.comm Require Import CoqIntegers.
-From bpf.dxmodel Require Import DxIntegers.
+From bpf.dxcomm Require Import CoqIntegers DxIntegers.
 From Coq Require Import ZArith Number Decimal.
 
 (* Derive Nat as unsigned int *)

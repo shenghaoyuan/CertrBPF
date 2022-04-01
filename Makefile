@@ -28,6 +28,9 @@ OCAMLINCS := -I extr # -I src
 all:
 	@echo $@
 	@$(MAKE) comm
+	@$(MAKE) dxcomm
+	@$(MAKE) verifier
+	@$(MAKE) dxverifier
 	@$(MAKE) model
 	@$(MAKE) monadicmodel
 	@$(MAKE) compile
@@ -38,27 +41,31 @@ all:
 	@$(MAKE) simulation
 	@$(MAKE) isolation
 	@$(MAKE) equivalence
-	@$(MAKE) verifier
-	@$(MAKE) dxverifier
 
-COQVERIFIER =  $(addprefix verifier/, comm/state.v comm/monad.v proofmodel/opcode.v proofmodel/verifier.v dxmodel/Dxopcode.v dxmodel/Dxstate.v dxmodel/Dxmonad.v dxmodel/Dxverifier.v dxmodel/verifier_dx.v dxmodel/verifier_TestMain.v dxmodel/verifier_ExtrMain.v)
+COQVERIFIER =  $(addprefix verifier/, comm/state.v comm/monad.v proofmodel/opcode.v proofmodel/verifier.v dxmodel/Dxopcode.v dxmodel/Dxstate.v dxmodel/Dxmonad.v dxmodel/Dxverifier.v dxmodel/verifier_dx.v dxmodel/verifier_TestMain.v dxmodel/verifier_ExtrMain.v synthesismodel/opcode_synthesis.v synthesismodel/verifier_synthesis.v)
 
 COQMODEL =  $(addprefix model/, Syntax.v Decode.v Semantics.v)
 
 COQEMONADIC =  $(addprefix monadicmodel/, Opcode.v rBPFInterpreter.v)
 
-COQDXMODEL =  $(addprefix dxmodel/, DxIntegers.v DxValues.v DxNat.v DxAST.v DxFlag.v DxList64.v DxOpcode.v IdentDef.v DxMemType.v DxMemRegion.v DxRegs.v DxBinrBPF.v DxState.v DxMonad.v DxInstructions.v Tests.v TestMain.v ExtrMain.v)
+COQDXMODEL =  $(addprefix dxmodel/, DxAST.v DxFlag.v DxOpcode.v IdentDef.v DxMemType.v DxMemRegion.v DxRegs.v DxState.v DxMonad.v DxInstructions.v Tests.v TestMain.v ExtrMain.v)
 
 COQEQUIV =  $(addprefix equivalence/, equivalence1.v equivalence2.v)
 
-COQISOLATION = $(addprefix isolation/, CommonISOLib.v AlignChunk.v RegsInv.v MemInv.v VerifierInv.v IsolationLemma.v Isolation.v)
+COQISOLATION = $(addprefix isolation/, CommonISOLib.v AlignChunk.v RegsInv.v MemInv.v VerifierInv.v CheckMem.v StateInv.v IsolationLemma.v Isolation1.v Isolation2.v)
 
-COQCOMM = $(addprefix comm/, Flag.v LemmaNat.v List64.v rBPFAST.v rBPFMemType.v rBPFValues.v MemRegion.v Regs.v BinrBPF.v State.v Monad.v InfComp.v GenMatchable.v CoqIntegers.v)
+COQCOMM = $(addprefix comm/, Flag.v LemmaNat.v List64.v rBPFAST.v rBPFMemType.v rBPFValues.v MemRegion.v Regs.v BinrBPF.v State.v Monad.v)
+
+COQDXCOMM = $(addprefix dxcomm/, InfComp.v GenMatchable.v CoqIntegers.v DxIntegers.v DxValues.v DxList64.v DxBinrBPF.v DxNat.v)
 
 comm:
 	@echo $@
-#	rm -f comm/*.vo
 	$(COQMAKEFILE) -f _CoqProject $(COQCOMM) COQEXTRAFLAGS = '-w all,-extraction'  -o CoqMakefile
+	make -f CoqMakefile
+
+dxcomm:
+	@echo $@
+	$(COQMAKEFILE) -f _CoqProject $(COQDXCOMM) COQEXTRAFLAGS = '-w all,-extraction'  -o CoqMakefile
 	make -f CoqMakefile
 
 verifier:
@@ -165,6 +172,7 @@ gitpush:
 	cp dxmodel/*.c $(GITDIR)/dxmodel
 	cp comm/*.v $(GITDIR)/comm
 	cp comm/*.md $(GITDIR)/comm
+	cp dxcomm/*.v $(GITDIR)/dxcomm
 	cp model/*.v $(GITDIR)/model
 	cp model/*.md $(GITDIR)/model
 	cp monadicmodel/*.v $(GITDIR)/monadicmodel
@@ -204,6 +212,7 @@ gitpull:
 	cp $(GITDIR)/dxmodel/*.c ./dxmodel
 	cp $(GITDIR)/comm/*.v ./comm
 	cp $(GITDIR)/comm/*.md ./comm
+	cp $(GITDIR)/dxcomm/*.v ./dxcomm
 	cp $(GITDIR)/model/*.v ./model
 	cp $(GITDIR)/model/*.md ./model
 	cp $(GITDIR)/monadicmodel/*.v ./monadicmodel
@@ -248,4 +257,4 @@ clean :
 # We want to keep the .cmi that were built as we go
 .SECONDARY:
 
-.PHONY: all test comm verifier model monadicmodel isolation equivalence compile extract repatch clightmodel clightlogic simulation clean
+.PHONY: all test comm dxcomm verifier model monadicmodel isolation equivalence compile extract repatch clightmodel clightlogic simulation clean

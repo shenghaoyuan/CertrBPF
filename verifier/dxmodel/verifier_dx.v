@@ -10,8 +10,7 @@ From compcert.lib Require Import Integers.
 From dx Require Import ResultMonad IR CoqIR IRtoC DXModule DumpAsC.
 From dx.Type Require Bool Nat.
 
-From bpf.comm Require Import CoqIntegers.
-From bpf.dxmodel Require Import DxIntegers DxList64 DxNat DxBinrBPF.
+From bpf.dxcomm Require Import CoqIntegers DxIntegers DxList64 DxNat DxBinrBPF.
 From bpf.verifier.dxmodel Require Import Dxopcode Dxstate Dxmonad Dxverifier.
 
 (***************************************)
@@ -37,6 +36,7 @@ GenerateIntermediateRepresentation SymbolIRs
   get_opcode
   get_offset
   nat2opcode
+  bpf_verifier_aux2
   bpf_verifier_aux
   bpf_verifier
 .

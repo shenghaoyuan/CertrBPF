@@ -7,36 +7,10 @@ From compcert Require Import Integers Values Memtype.
 From dx Require Import ResultMonad IR IRtoC.
 From dx.Type Require Import Nat.
 
-From bpf.comm Require Import MemRegion CoqIntegers.
-From bpf.dxmodel Require Import IdentDef DxIntegers DxValues DxMemType.
-(*
-Record memory_region : Type := mkmr{
-  start_addr : valptr8_t;
-  block_size : valu32_t;   (**r should those be val32_t? *)
-  block_perm : permission; (**r let's say it should be u32 *)
-  block_ptr  : valptr8_t;
-}.
+From bpf.comm Require Import MemRegion.
+From bpf.dxcomm Require Import CoqIntegers DxIntegers DxValues.
+From bpf.dxmodel Require Import IdentDef DxMemType.
 
-Definition default_memory_region := {|
-  start_addr := valptr_null;
-  block_size := val32_zero;
-  block_perm := Nonempty;
-  block_ptr  := valptr_null;
-|}.
-
-Module Memory_regions.
-
-  Definition t := list memory_region.
-  Definition index_nat (l: t) (idx: nat): memory_region := 
-    List.nth idx l (default_memory_region).
-
-End Memory_regions.
-
-Definition MyMemRegionsType := Memory_regions.t.
-Definition MyMemRegionsIndexnat := Memory_regions.index_nat.
-
-Definition default_memory_regions: MyMemRegionsType :=  [].
-*)
 Fixpoint MyMemRegionsAdd (mr: memory_region) (l: MyMemRegionsType) :=
   match l with
   | [] => [mr]
