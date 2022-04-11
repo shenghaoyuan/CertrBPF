@@ -29,9 +29,9 @@ all:
 	@echo $@
 	@$(MAKE) comm
 	@$(MAKE) dxcomm
+	@$(MAKE) model
 	@$(MAKE) verifier
 	@$(MAKE) dxverifier
-	@$(MAKE) model
 	@$(MAKE) monadicmodel
 	@$(MAKE) compile
 	@$(MAKE) extract
@@ -42,7 +42,11 @@ all:
 	@$(MAKE) isolation
 	@$(MAKE) equivalence
 
-COQVERIFIER =  $(addprefix verifier/, comm/state.v comm/monad.v proofmodel/opcode.v proofmodel/verifier.v dxmodel/Dxopcode.v dxmodel/Dxstate.v dxmodel/Dxmonad.v dxmodel/Dxverifier.v dxmodel/verifier_dx.v dxmodel/verifier_TestMain.v dxmodel/verifier_ExtrMain.v synthesismodel/opcode_synthesis.v synthesismodel/verifier_synthesis.v)
+COQVERIFIER =  $(addprefix verifier/, comm/state.v comm/monad.v synthesismodel/opcode_synthesis.v synthesismodel/verifier_synthesis.v dxmodel/Dxopcode.v dxmodel/Dxstate.v dxmodel/Dxmonad.v dxmodel/Dxverifier.v dxmodel/verifier_dx.v dxmodel/verifier_TestMain.v dxmodel/verifier_ExtrMain.v)
+
+COQVERIFIERCLIGHT= $(addprefix verifier/, clightmodel/verifier.v)
+
+COQVERIFIERSIMULATION = $(addprefix verifier/simulation/, Verifierclight_exec.v VerifierClightlogic.v VerifierCommonLib.v VerifierCommonLemma.v VerifierSimulation.v VerifierRel.v correct_eval_ins.v correct_eval_ins_len.v correct_is_dst_R0.v correct_is_well_dst.v correct_is_well_src.v correct_is_well_jump.v correct_is_not_div_by_zero.v correct_is_not_div_by_zero64.v correct_is_shift_range.v correct_is_shift_range64.v)
 
 COQMODEL =  $(addprefix model/, Syntax.v Decode.v Semantics.v)
 
@@ -52,7 +56,7 @@ COQDXMODEL =  $(addprefix dxmodel/, DxAST.v DxFlag.v DxOpcode.v IdentDef.v DxMem
 
 COQEQUIV =  $(addprefix equivalence/, equivalence1.v equivalence2.v)
 
-COQISOLATION = $(addprefix isolation/, CommonISOLib.v AlignChunk.v RegsInv.v MemInv.v VerifierInv.v CheckMem.v StateInv.v IsolationLemma.v Isolation1.v Isolation2.v)
+COQISOLATION = $(addprefix isolation/, CommonISOLib.v AlignChunk.v RegsInv.v MemInv.v VerifierOpcode.v VerifierInv.v CheckMem.v StateInv.v IsolationLemma.v Isolation1.v Isolation2.v)
 
 COQCOMM = $(addprefix comm/, Flag.v LemmaNat.v List64.v rBPFAST.v rBPFMemType.v rBPFValues.v MemRegion.v Regs.v BinrBPF.v State.v Monad.v)
 
@@ -78,6 +82,10 @@ verifier:
 dxverifier:
 	@echo $@
 	cd verifier && $(MAKE) verifier-all
+	$(COQMAKEFILE) -f _CoqProject $(COQVERIFIERCLIGHT) COQEXTRAFLAGS = '-w all,-extraction'  -o CoqMakefile
+	make -f CoqMakefile
+	$(COQMAKEFILE) -f _CoqProject $(COQVERIFIERSIMULATION) COQEXTRAFLAGS = '-w all,-extraction'  -o CoqMakefile
+	make -f CoqMakefile
 
 model:
 	@echo $@
@@ -168,43 +176,45 @@ GITDIR=/home/shyuan/GitLab/rbpf-dx
 
 gitpush:
 	@echo $@
-	cp dxmodel/*.v $(GITDIR)/dxmodel
-	cp dxmodel/*.c $(GITDIR)/dxmodel
-	cp comm/*.v $(GITDIR)/comm
-	cp comm/*.md $(GITDIR)/comm
-	cp dxcomm/*.v $(GITDIR)/dxcomm
-	cp model/*.v $(GITDIR)/model
-	cp model/*.md $(GITDIR)/model
-	cp monadicmodel/*.v $(GITDIR)/monadicmodel
-	cp monadicmodel/*.md $(GITDIR)/monadicmodel
-	cp equivalence/*.v $(GITDIR)/equivalence
-	cp equivalence/*.md $(GITDIR)/equivalence
-	cp isolation/*.v $(GITDIR)/isolation
-	cp isolation/*.md $(GITDIR)/isolation
-	cp simulation/*.v $(GITDIR)/simulation
 	cp clight/*.v $(GITDIR)/clight
 	cp clight/*.c $(GITDIR)/clight
 	cp clight/*.h $(GITDIR)/clight
 	cp clightlogic/*.v $(GITDIR)/clightlogic
 	cp clightlogic/*.md $(GITDIR)/clightlogic
+	cp comm/*.v $(GITDIR)/comm
+	cp comm/*.md $(GITDIR)/comm
+	cp dxcomm/*.v $(GITDIR)/dxcomm
+	cp dxmodel/*.v $(GITDIR)/dxmodel
+	cp dxmodel/*.c $(GITDIR)/dxmodel
+	cp equivalence/*.v $(GITDIR)/equivalence
+	cp equivalence/*.md $(GITDIR)/equivalence
+	cp model/*.v $(GITDIR)/model
+	cp model/*.md $(GITDIR)/model
+	cp monadicmodel/*.v $(GITDIR)/monadicmodel
+	cp monadicmodel/*.md $(GITDIR)/monadicmodel
 	cp repatch/*.c $(GITDIR)/repatch
+	cp simulation/*.v $(GITDIR)/simulation
+	cp isolation/*.v $(GITDIR)/isolation
+	cp isolation/*.md $(GITDIR)/isolation
 	cp Makefile $(GITDIR)
 	cp compcertcprinter-cmx-args $(GITDIR)
 	cp *.md $(GITDIR)
 	cp _CoqProject $(GITDIR)
 	cp Makefile.config $(GITDIR)
-	cp verifier/Makefile $(GITDIR)/verifier
-	cp verifier/Makefile.config $(GITDIR)/verifier
-	cp verifier/compcertcprinter-cmx-args $(GITDIR)/verifier
-	cp verifier/*.md $(GITDIR)/verifier
 	cp verifier/clightmodel/*.h $(GITDIR)/verifier/clightmodel
 	cp verifier/clightmodel/*.c $(GITDIR)/verifier/clightmodel
+	cp verifier/clightmodel/*.v $(GITDIR)/verifier/clightmodel
 	cp verifier/comm/*.v $(GITDIR)/verifier/comm
 	cp verifier/dxmodel/*.v $(GITDIR)/verifier/dxmodel
 	cp verifier/proofmodel/*.v $(GITDIR)/verifier/proofmodel
 	cp verifier/property/*.v $(GITDIR)/verifier/property
 	cp verifier/repatch/*.c $(GITDIR)/verifier/repatch
+	cp verifier/simulation/*.v $(GITDIR)/verifier/simulation
 	cp verifier/synthesismodel/*.v $(GITDIR)/verifier/synthesismodel
+	cp verifier/Makefile $(GITDIR)/verifier
+	cp verifier/Makefile.config $(GITDIR)/verifier
+	cp verifier/compcertcprinter-cmx-args $(GITDIR)/verifier
+	cp verifier/*.md $(GITDIR)/verifier
 
 gitpull:
 	@echo $@
@@ -237,12 +247,14 @@ gitpull:
 	cp $(GITDIR)/verifier/*.md ./verifier
 	cp $(GITDIR)/verifier/clightmodel/*.h ./verifier/clightmodel
 	cp $(GITDIR)/verifier/clightmodel/*.c ./verifier/clightmodel
+	cp $(GITDIR)/verifier/clightmodel/*.v ./verifier/clightmodel
 	cp $(GITDIR)/verifier/comm/*.v ./verifier/comm
 	cp $(GITDIR)/verifier/dxmodel/*.v ./verifier/dxmodel
 	cp $(GITDIR)/verifier/proofmodel/*.v ./verifier/proofmodel
 	cp $(GITDIR)/verifier/property/*.v ./verifier/property
 	cp $(GITDIR)/verifier/repatch/*.c ./verifier/repatch
 	cp $(GITDIR)/verifier/synthesismodel/*.v ./verifier/synthesismodel
+	cp $(GITDIR)/verifier/simulation/*.v ./verifier/simulation
 
 clean :
 	@echo $@
@@ -257,4 +269,4 @@ clean :
 # We want to keep the .cmi that were built as we go
 .SECONDARY:
 
-.PHONY: all test comm dxcomm verifier model monadicmodel isolation equivalence compile extract repatch clightmodel clightlogic simulation clean
+.PHONY: all test comm dxcomm verifier dxverifier model monadicmodel isolation equivalence compile extract repatch clightmodel clightlogic simulation clean

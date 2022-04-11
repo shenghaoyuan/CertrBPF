@@ -69,26 +69,26 @@ Definition bpf_verifier_aux2 (pc len op: nat) (ins: int64) : M bool :=
   | ILLGEL => returnM false
   end.
 
-Fixpoint bpf_verifier_aux (pc: nat): M bool := (**r pc: len-1, len-2, ... 0 *)
-  do len  <- eval_ins_len;
-  do ins64<- eval_ins (Int.repr (Z.of_nat (len - 1 - pc))); (**r len-pc: 0, 1, 2, etc... len -1 *)
-  do op   <- get_opcode ins64;
+Fixpoint bpf_verifier_aux (pc len: nat): M bool :=
     match pc with
-    | O => returnM (Int64.eq ins64 (Int64.repr 0x95))
+    | O => returnM true
     | S n =>
+      do ins64<- eval_ins (Int.repr (Z.of_nat n));
+      do op   <- get_opcode ins64;
       do b <- bpf_verifier_aux2 pc len op ins64;
         if b then
-          bpf_verifier_aux n
+          bpf_verifier_aux n len
         else
           returnM false
     end.
+
 
 Definition bpf_verifier: M bool :=
   do len  <- eval_ins_len;
   (**r (0, Int.max_unsigned/8): at least one instruction, and at most Int.max_unsigned/8 because of memory region *)
     if Nat.leb 1 len then
       if Nat.leb len ((Z.to_nat Ptrofs.max_unsigned)/8) then
-        bpf_verifier_aux (len - 1)
+        bpf_verifier_aux len len
       else
         returnM false
     else

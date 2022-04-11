@@ -2,7 +2,7 @@
 
 struct verifier_state {
   unsigned int ins_len;
-  unsigned long long *ins;
+  const unsigned long long *ins;
 };
 
 _Bool bpf_verifier(struct verifier_state *);

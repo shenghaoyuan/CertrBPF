@@ -20,22 +20,64 @@ const char start_point[] = "unsigned long long eval_ins(unsigned int)";
 
 
 const char old_words[][200] = {
-	"unsigned char nat2opcode",
+	"_Bool is_dst_R0",
+	"_Bool is_well_dst",
+	"_Bool is_well_src",
+	"_Bool is_well_jump",
+	"_Bool is_not_div_by_zero(",
+	"_Bool is_not_div_by_zero64",
+	"_Bool is_shift_range(",
+	"_Bool is_shift_range64",
+	"unsigned int get_opcode",
+	"int get_offset",
+	"_Bool bpf_verifier_opcode_alu32_imm",
+	"_Bool bpf_verifier_opcode_alu32_reg",
+	"_Bool bpf_verifier_opcode_alu64_imm",
+	"_Bool bpf_verifier_opcode_alu64_reg",
+	"_Bool bpf_verifier_opcode_branch_imm",
+	"_Bool bpf_verifier_opcode_branch_reg",
+	"_Bool bpf_verifier_opcode_load_imm",
+	"_Bool bpf_verifier_opcode_load_reg",
+	"_Bool bpf_verifier_opcode_store_imm",
+	"_Bool bpf_verifier_opcode_store_reg",
+	"_Bool bpf_verifier_aux2(",
 	"eval_ins_len()",
 	"eval_ins(",
 	"_Bool bpf_verifier_aux(",
 	"_Bool bpf_verifier(void)",
-	"return bpf_verifier_aux("
+	"return bpf_verifier_aux(",
+	"= bpf_verifier_aux("
 	
 	};
 
-const char new_words[][200] = {	
-	"static __attribute__((always_inline)) inline unsigned char nat2opcode",
+const char new_words[][200] = {
+	"static __attribute__((always_inline)) inline _Bool is_dst_R0",
+	"static __attribute__((always_inline)) inline _Bool is_well_dst",
+	"static __attribute__((always_inline)) inline _Bool is_well_src",
+	"static __attribute__((always_inline)) inline _Bool is_well_jump",
+	"static __attribute__((always_inline)) inline _Bool is_not_div_by_zero(",
+	"static __attribute__((always_inline)) inline _Bool is_not_div_by_zero64",
+	"static __attribute__((always_inline)) inline _Bool is_shift_range(",
+	"static __attribute__((always_inline)) inline _Bool is_shift_range64",
+	"static __attribute__((always_inline)) inline unsigned int get_opcode",
+	"static __attribute__((always_inline)) inline int get_offset",
+	"static __attribute__((always_inline)) inline _Bool bpf_verifier_opcode_alu32_imm",
+	"static __attribute__((always_inline)) inline _Bool bpf_verifier_opcode_alu32_reg",
+	"static __attribute__((always_inline)) inline _Bool bpf_verifier_opcode_alu64_imm",
+	"static __attribute__((always_inline)) inline _Bool bpf_verifier_opcode_alu64_reg",
+	"static __attribute__((always_inline)) inline _Bool bpf_verifier_opcode_branch_imm",
+	"static __attribute__((always_inline)) inline _Bool bpf_verifier_opcode_branch_reg",
+	"static __attribute__((always_inline)) inline _Bool bpf_verifier_opcode_load_imm",
+	"static __attribute__((always_inline)) inline _Bool bpf_verifier_opcode_load_reg",
+	"static __attribute__((always_inline)) inline _Bool bpf_verifier_opcode_store_imm",
+	"static __attribute__((always_inline)) inline _Bool bpf_verifier_opcode_store_reg",
+	"static __attribute__((always_inline)) inline _Bool bpf_verifier_aux2(",
 	"eval_ins_len(st)",
 	"eval_ins(st, ",
-	"static __attribute__((always_inline)) inline _Bool bpf_verifier_aux(struct verifier_state * st, ",
+	"_Bool bpf_verifier_aux(struct verifier_state * st, ",
 	"_Bool bpf_verifier(struct verifier_state * st)",
-	"return bpf_verifier_aux(st, "
+	"return bpf_verifier_aux(st, ",
+	"= bpf_verifier_aux(st, "
 	
 	};
 	

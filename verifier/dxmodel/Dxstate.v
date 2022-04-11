@@ -30,6 +30,18 @@ Definition stateCompilableType := MkCompilableType state state_struct_type.
 Definition uint64ToboolSymbolType :=
   MkCompilableSymbolType [int64CompilableType] (Some boolCompilableType).
 
+Definition Const_is_dst_R0' :=
+  MkPrimitive uint64ToboolSymbolType
+                is_dst_R0'
+                (fun es => match es with
+                           | [e1] => Ok (Csyntax.Ebinop Cop.Oeq
+                                          (Csyntax.Ecast (Csyntax.Ebinop Cop.Oshr
+                                            (Csyntax.Ebinop Cop.Oand e1 C_U64_0xfff C_U64)
+                                            C_U64_8 C_U64) C_U32)
+                                           C_U32_zero C_U32)
+                           | _       => Err PrimitiveEncodingFailed
+                           end).
+
 Definition Const_is_well_dst' :=
   MkPrimitive uint64ToboolSymbolType
                 is_well_dst'
@@ -78,6 +90,18 @@ Definition Const_is_not_div_by_zero' :=
                            | _       => Err PrimitiveEncodingFailed
                            end).
 
+Definition Const_is_not_div_by_zero64' :=
+  MkPrimitive uint64ToboolSymbolType
+                is_not_div_by_zero64'
+                (fun es => match es with
+                           | [e1] => Ok (Csyntax.Ebinop Cop.One
+                                          (Csyntax.Ecast
+                                            (Csyntax.Ecast
+                                              (Csyntax.Ebinop Cop.Oshr e1 C_U64_32 C_U64) C_S32) C_S64)
+                                           C_U64_zero C_S64)
+                           | _       => Err PrimitiveEncodingFailed
+                           end).
+
 Definition uint64Touint32ToboolSymbolType :=
   MkCompilableSymbolType [int64CompilableType; uint32CompilableType] (Some boolCompilableType).
 
@@ -85,17 +109,23 @@ Definition Const_is_shift_range' :=
   MkPrimitive uint64Touint32ToboolSymbolType
                 is_shift_range'
                 (fun es => match es with
-                           | [e1; e2] => Ok (Csyntax.Ebinop Cop.Oand
-                                              (Csyntax.Ebinop Cop.Ole
-                                                C_U32_zero
+                           | [e1; e2] => Ok (Csyntax.Ebinop Cop.Olt
+                                              (Csyntax.Ecast
+                                                (Csyntax.Ebinop Cop.Oshr e1 C_U64_32 C_U64) C_S32)
+                                              e2 C_S32)
+                           | _       => Err PrimitiveEncodingFailed
+                           end).
+
+Definition Const_is_shift_range64' :=
+  MkPrimitive uint64Touint32ToboolSymbolType
+                is_shift_range64'
+                (fun es => match es with
+                           | [e1; e2] => Ok (Csyntax.Ebinop Cop.Olt
+                                              (Csyntax.Ecast
                                                 (Csyntax.Ecast
-                                                  (Csyntax.Ebinop Cop.Oshr e1 C_U64_32 C_U64) C_S32)
-                                                  C_S32)
-                                              (Csyntax.Ebinop Cop.Ole
-                                                (Csyntax.Ecast
-                                                  (Csyntax.Ebinop Cop.Oshr e1 C_U64_32 C_U64) C_S32)
-                                                e2
-                                                  C_S32) C_S32)
+                                                  (Csyntax.Ecast
+                                                    (Csyntax.Ebinop Cop.Oshr e1 C_U64_32 C_U64) C_S32) C_U64) C_U32)
+                                              e2 C_U32)
                            | _       => Err PrimitiveEncodingFailed
                            end).
 
@@ -113,10 +143,13 @@ Definition Const_nat2int2 :=
 
 Module Exports.
   Definition stateCompilableType            := stateCompilableType.
+  Definition Const_is_dst_R0'               := Const_is_dst_R0'.
   Definition Const_is_well_dst'             := Const_is_well_dst'.
   Definition Const_is_well_src'             := Const_is_well_src'.
   Definition Const_is_well_jump'            := Const_is_well_jump'.
   Definition Const_is_not_div_by_zero'      := Const_is_not_div_by_zero'.
+  Definition Const_is_not_div_by_zero64'    := Const_is_not_div_by_zero64'.
   Definition Const_is_shift_range'          := Const_is_shift_range'.
+  Definition Const_is_shift_range64'        := Const_is_shift_range64'.
   Definition Const_nat2int2                 := Const_nat2int2.
 End Exports.

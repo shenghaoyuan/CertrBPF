@@ -1,9 +1,8 @@
 From compcert Require Import Integers Values.
 From bpf.comm Require Import Regs BinrBPF State LemmaNat.
 From bpf.model Require Import Semantics.
-From bpf.isolation Require Import AlignChunk CommonISOLib.
+From bpf.isolation Require Import AlignChunk CommonISOLib VerifierOpcode.
 From bpf.verifier.comm Require Import state.
-From bpf.verifier.synthesismodel Require Import opcode_synthesis.
 From Coq Require Import ZArith Lia List.
 Import ListNotations.
 
@@ -51,7 +50,6 @@ Definition is_shift_range (i: int64) (upper: int): bool :=
 Definition is_shift_range64 (i: int64) (upper: int): bool :=
   Int.ltu (Int.repr (Int64.unsigned (Int64.repr (Int.signed (BinrBPF.get_immediate i))))) upper.
 
-
 Definition bpf_verifier_aux2 (pc len op: nat) (ins: int64) : bool :=
   match nat_to_opcode op with
   | ALU64  (**r 0xX7 / 0xXf *) =>
@@ -81,15 +79,25 @@ Definition bpf_verifier_aux2 (pc len op: nat) (ins: int64) : bool :=
     | JMP_SP => Int.cmpu Ceq (Int.repr (get_dst ins)) (Int.repr 0)
     | JMP_ILLEGAL => false
     end
-  | LD_IMM (**r 0xX8 *) | ST_IMM (**r 0xX2/0xXa *) =>
+  | LD_IMM (**r 0xX8 *) =>
     match nat_to_opcode_load_imm op with
     | LD_IMM_Normal  => is_well_dst ins
     | LD_IMM_ILLEGAL => false
     end
-  | LD_REG (**r 0xX1/0xX9 *) | ST_REG (**r 0xX3/0xXb *)  =>
+  | LD_REG (**r 0xX1/0xX9 *) =>
     match nat_to_opcode_load_reg op with
     | LD_REG_Normal  => is_well_dst ins && is_well_src ins
     | LD_REG_ILLEGAL => false
+    end
+  | ST_IMM (**r 0xX2/0xXa *) =>
+    match nat_to_opcode_store_imm op with
+    | ST_IMM_Normal  => is_well_dst ins
+    | ST_IMM_ILLEGAL => false
+    end
+  | ST_REG (**r 0xX3/0xXb *)  =>
+    match nat_to_opcode_store_reg op with
+    | ST_REG_Normal  => is_well_dst ins && is_well_src ins
+    | ST_REG_ILLEGAL => false
     end
   | ILLEGAL => false
   end.
@@ -105,17 +113,46 @@ Fixpoint bpf_verifier_aux (pc len: nat) (st: state.state): bool :=
           else
             false
     end.
-
+(*
+Fixpoint bpf_verifier_aux_rev (pc len: nat) (st: state.state): bool :=
+    match pc with
+    | O => true
+    | S n =>
+      let i := List64.MyListIndexs32 (ins st) (Int.repr (Z.of_nat (len - 1 - n))) in
+      let op := get_opcode i in
+        if (bpf_verifier_aux2 (len - 1 - n) len op i) then
+            bpf_verifier_aux_rev n len st
+          else
+            false
+    end.
+*)
 Definition bpf_verifier (st: state.state): bool :=
   let len := ins_len st in
   (**r (0, Int.max_unsigned/8): at least one instruction, and at most Int.max_unsigned/8 because of memory region *)
     if Nat.leb 1 len then
       if Nat.leb len ((Z.to_nat Ptrofs.max_unsigned)/8) then
-          bpf_verifier_aux len len st
+        if bpf_verifier_aux len len st then
+          let i := List64.MyListIndexs32 (ins st) (Int.repr (Z.of_nat  (len - 1))) in
+            Int64.eq i (Int64.repr 0x95)
+        else
+          false
       else
         false
     else
       false.
+
+Lemma sub_lt:
+  forall a b,
+    b < a ->
+    a - 1 - b < a.
+Proof.
+  intros.
+  assert (1+b <= a) by lia.
+  rewrite <- Nat.sub_add_distr.
+  apply Nat.sub_lt.
+  assumption.
+  lia.
+Qed.
 
 Lemma bpf_verifier_aux_implies:
   forall st pc op ins k
@@ -152,6 +189,81 @@ Proof.
       assumption.
 Qed.
 
+(*
+Lemma is_well_jump_ind:
+  forall k len ofs,
+    is_well_jump k len ofs = true ->
+      is_well_jump 0 len ofs = true.
+Proof.
+  unfold is_well_jump; intros.
+  destruct k.
+  - assumption.
+  - unfold Int.cmpu in *.
+    rewrite Clt_Zlt_iff in *.
+    
+Qed. *)
+
+Lemma bpf_verifier_aux_implies':
+  forall st pc op ins k
+    (Hst: bpf_verifier_aux k (ins_len st) st = true)
+    (Hlen: List.length (state.ins st) = ins_len st)
+    (Hpc: pc < k)
+    (Hop: op = get_opcode ins)
+    (Hins: ins = List64.MyListIndexs32 (state.ins st) (Int.repr (Z.of_nat (k-1-pc)))),
+      bpf_verifier_aux2 (k-1-pc) (ins_len st) op ins = true.
+Proof.
+  intros.
+  assert (H: k-1-pc < k). {
+    eapply sub_lt; eauto.
+  }
+  eapply bpf_verifier_aux_implies; eauto.
+Qed.
+
+
+Lemma bpf_verifier_aux_implies_bpf_verifier_aux:
+  forall st pc k
+    (Hst: bpf_verifier_aux k (ins_len st) st = true)
+    (Hlen: List.length (state.ins st) = ins_len st)
+    (Hpc: pc < k),
+      bpf_verifier_aux pc (ins_len st) st = true.
+Proof.
+  intros.
+  induction k.
+  - lia.
+  - assert (Hpc_eq: pc = k \/ pc < k) by lia.
+    destruct Hpc_eq as [Hpc_eq | Hpc_lt].
+    + simpl in Hst.
+      unfold List64.MyListIndexs32, List64.MyList.index_s32 in Hst.
+      rewrite Hpc_eq in *.
+      match goal with
+      | H: (if ?X then _ else _) = _ |- _ =>
+        destruct X eqn: Haux2;[ | inversion H]
+      end.
+      assumption.
+    + apply IHk; auto.
+      simpl in Hst.
+      match goal with
+      | H: (if ?X then _ else _) = _ |- _ =>
+        destruct X eqn: Haux2;[ | inversion H]
+      end.
+      assumption.
+Qed.
+
+
+Lemma bpf_verifier_aux_implies_bpf_verifier_aux':
+  forall st pc k
+    (Hst: bpf_verifier_aux k (ins_len st) st = true)
+    (Hlen: List.length (state.ins st) = ins_len st)
+    (Hpc: pc < k),
+      bpf_verifier_aux (k-1-pc) (ins_len st) st = true.
+Proof.
+  intros.
+  assert (H: k-1-pc < k). {
+    eapply sub_lt; eauto.
+  }
+  eapply bpf_verifier_aux_implies_bpf_verifier_aux; eauto.
+Qed.
+
 Lemma bpf_verifier_implies:
   forall st pc op ins
     (Hst: bpf_verifier st = true)
@@ -171,8 +283,34 @@ Proof.
   | H: (if ?X then _ else _) = _ |- _ =>
     destruct X eqn: Hlen_high;[ | inversion H]
   end.
+  match goal with
+  | H: (if ?X then _ else _) = _ |- _ =>
+    destruct X eqn: Haux;[ | inversion H]
+  end.
   eapply bpf_verifier_aux_implies; eauto.
 Qed.
+
+(*
+Lemma bpf_verifier_aux_rev_iff:
+  forall st k,
+    bpf_verifier_aux k (ins_len st) st = bpf_verifier_aux_rev k (ins_len st) st.
+Proof.
+  intros.
+  induction k.
+  - simpl. reflexivity.
+  - simpl.
+
+    destruct bpf_verifier_aux eqn: Hst; rewrite <-IHk.
+    + symmetry in IHk.
+      
+    + destruct bpf_verifier_aux2; destruct bpf_verifier_aux2; reflexivity.
+      
+
+    rewrite Nat.sub_0_r.
+    rewrite Nat.sub_diag.
+  Search List.rev.
+Qed. *)
+
 
 Close Scope nat_scope.
 

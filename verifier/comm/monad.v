@@ -18,7 +18,12 @@ Definition bindM {A B: Type} (x: M A) (f: A -> M B) : M B :=
 
 Definition eval_ins_len : M nat := fun st => Some (eval_ins_len st, st).
 
-Definition eval_ins (idx: int) : M int64 := fun st => Some (eval_ins idx st, st).
+Definition eval_ins (idx: int) : M int64 := fun st =>
+  if (Int.cmpu Clt idx (Int.repr (Z.of_nat (ins_len st)))) then
+    Some (eval_ins idx st, st)
+  else
+    None.
+
 
 
 Declare Scope monad_scope.

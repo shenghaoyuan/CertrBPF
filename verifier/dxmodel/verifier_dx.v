@@ -28,14 +28,26 @@ GenerateIntermediateRepresentation SymbolIRs
   eval_ins_len
   eval_ins
   __
+  is_dst_R0
   is_well_dst
   is_well_src
   is_well_jump
   is_not_div_by_zero
+  is_not_div_by_zero64
   is_shift_range
+  is_shift_range64
   get_opcode
   get_offset
-  nat2opcode
+  bpf_verifier_opcode_alu32_imm
+  bpf_verifier_opcode_alu32_reg
+  bpf_verifier_opcode_alu64_imm
+  bpf_verifier_opcode_alu64_reg
+  bpf_verifier_opcode_branch_imm
+  bpf_verifier_opcode_branch_reg
+  bpf_verifier_opcode_load_imm
+  bpf_verifier_opcode_load_reg
+  bpf_verifier_opcode_store_imm
+  bpf_verifier_opcode_store_reg
   bpf_verifier_aux2
   bpf_verifier_aux
   bpf_verifier

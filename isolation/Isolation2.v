@@ -1,8 +1,7 @@
 From compcert Require Import Integers Values AST Memory Memtype.
 From bpf.comm Require Import BinrBPF State Monad.
 From bpf.model Require Import Syntax Semantics.
-From bpf.verifier.synthesismodel Require Import opcode_synthesis.
-From bpf.isolation Require Import CommonISOLib AlignChunk RegsInv MemInv VerifierInv CheckMem StateInv IsolationLemma Isolation1.
+From bpf.isolation Require Import CommonISOLib AlignChunk RegsInv MemInv VerifierOpcode VerifierInv CheckMem StateInv IsolationLemma Isolation1.
 
 From Coq Require Import ZArith Lia.
 
@@ -343,7 +342,7 @@ Proof.
     unfold Decode.get_instruction_st, bindM, returnM.
     rewrite opcode_and_255.
 
-    destruct nat_to_opcode_load_imm; [| inversion Hverifier].
+    destruct nat_to_opcode_store_imm; [| inversion Hverifier].
     apply verifier_inv_is_well_dst in Hverifier.
     destruct Hverifier as (dst & Hdst).
     rewrite Hdst.
@@ -541,7 +540,7 @@ Proof.
     unfold Decode.get_instruction_stx, bindM, returnM.
     rewrite opcode_and_255.
 
-    destruct nat_to_opcode_load_reg; [| inversion Hverifier].
+    destruct nat_to_opcode_store_reg; [| inversion Hverifier].
     destruct is_well_dst eqn: Hdst; [| inversion Hverifier].
 
     apply verifier_inv_is_well_dst in Hdst.
